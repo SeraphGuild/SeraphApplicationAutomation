@@ -1,14 +1,16 @@
 import { AzureFunction, Context, HttpRequest } from "@azure/functions"
+import DiscordService from "./discordService";
 
 const httpTrigger: AzureFunction = async function (context: Context, req: HttpRequest): Promise<void> {
-    context.log(JSON.stringify(req.body));
+    context.log(`application received: ${JSON.stringify(req.body)}`);
+
+    let service: DiscordService = new DiscordService(context.log);
+    let statusCode: number = await service.SendApplicationNotification(req.body) ? 204 : 500;
     context.res = {
-        status: 200,
-        body: req.body,
-        headers: {
-            "Content-Type": "application/json"
-        }
+        status: statusCode,
     };
+
+    context.log(`processed application. Status Code ${statusCode}`);
 };
 
 export default httpTrigger;
