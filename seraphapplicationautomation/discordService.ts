@@ -1,7 +1,5 @@
-import * as request from "request-promise-native";
 import { Logger } from "@azure/functions";
 import { RichEmbed, WebhookClient, WebhookMessageOptions } from "discord.js";
-import { stringify } from "querystring";
 
 const ClassColorCodeMap = {
     "Death Knight": 12853051,
@@ -18,22 +16,39 @@ const ClassColorCodeMap = {
     "Warrior": 13081710
 }
 
+const RoleIds: number[] = [
+    654076174250803220,
+    654076235537842196,
+    0,
+    0,
+    654076254953144371
+]
+
+// const RoleIds: number[] = [
+//     352083357376708608,
+//     352083485420290058,
+//     438160508714221578,
+//     579784598263693313,
+//     595341062000738364,
+//     648692259927359503
+// ]
+
 export default class DiscordService {
     private logger: Logger;
     private webhookClient: WebhookClient;
 
     constructor(logger: Logger) {
         this.logger = logger;
-        this.webhookClient = new WebhookClient("653344221624926218", "Qy8hcrtGpvzVDmqgsD47eUc7luc9j_4vu7pzqFsGyH1xpmmSPIZovB1i8r59MtcG1Ao-");
+        this.webhookClient = new WebhookClient(process.env.clientId, process.env.clientToken);
     }
 
-    public async SendApplicationNotification(formData: {string: string[]}): Promise<boolean> {
+    public async SendApplicationNotification(formData: {string: (string[] | string)}, forumPostUrl: string): Promise<boolean> {
         this.logger("POSTing form data to discord channel");
 
         try {
             await this.webhookClient.send(
                 DiscordService.GetMessageContent(formData["Which team(s) are you applying for?"], formData["Team Preference:"]), 
-                DiscordService.GetRequestOptions(formData));
+                DiscordService.GetRequestOptions(formData, forumPostUrl));
             this.logger("Successfully posted form data to discord channel");
             return true;
         } catch (ex) {
@@ -42,7 +57,7 @@ export default class DiscordService {
         }
     }
 
-    private static GetRequestOptions(formData: {string: string[]}): any {
+    private static GetRequestOptions(formData: {string: (string[] | string)}, forumPostUrl: string): any {
         return <WebhookMessageOptions>{
             username: "Seraph Application Automation",
             avatarURL: "https://cdn.discordapp.com/icons/328648081597792268/cb0dfe6bdef6ee1a280a70f9fb4688ae.png?size=128",
@@ -50,7 +65,7 @@ export default class DiscordService {
             embeds: [
                 <RichEmbed>{
                     title: "A new application has been posted to the forums for review",
-                    url: "https://www.seraphguildforums.com/viewforum.php?f=2",
+                    url: forumPostUrl,
                     color: ClassColorCodeMap[formData["Class:"]],
                     fields: [
                         {
@@ -121,7 +136,7 @@ export default class DiscordService {
                 return prevPref;
             }
 
-            return `${prevPref} @R${currentPref[0]}`
+            return `${prevPref} <@&${RoleIds[(+currentPref[0])-1]}>`
         }, "");
 
         const prefenceSnippet = appedTeams.length > 1 && teamPreference ? `Team Preference: ${teamPreference}` : "Team Preference: No preference given";
