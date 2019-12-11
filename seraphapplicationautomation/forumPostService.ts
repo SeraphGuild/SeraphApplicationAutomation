@@ -1,5 +1,6 @@
 import { launch, Browser, LaunchOptions, Page } from "puppeteer";
 import { Logger } from "@azure/functions";
+import SeraphApplicationFormData from "./seraphApplicationFormData";
 
 export default class ForumPostService {
     private logger: Logger;
@@ -8,7 +9,7 @@ export default class ForumPostService {
         this.logger = logger;
     }
 
-    public async PostToRecruitmentForum(formData: {string: (string[] | string)}): Promise<string> {
+    public async PostToRecruitmentForum(formData: SeraphApplicationFormData): Promise<string> {
         this.logger("beginning forum posting");
 
         try {
@@ -18,9 +19,10 @@ export default class ForumPostService {
             await this.LoginToForum(page, process.env.forumUsername, process.env.forumPassword);
             await this.NavigateToPostingPage(page);
 
-            let forumPost: { subject: string, message: string } = this.BuildForumPostMessage(formData);
+            let subject: string = this.BuildForumPostSubject(formData);
+            let message: string = this.BuildForumPostMessage(formData);
 
-            await this.PostMessage(page, forumPost);
+            await this.PostMessage(page, subject, message);
             let forumPostUrl: string = await this.GetForumPostUrl(page);
 
             this.logger("Successfully posted application to the forum");
@@ -53,17 +55,41 @@ export default class ForumPostService {
         await page.click("a[title=\"Post a new topic\"]");
     }
 
-    private BuildForumPostMessage(formData: {string: (string[] | string)}): { subject: string, message: string } {
-        return {
-            subject: "This is a test",
-            message: "Ah fuck yeah!"
-        }
+    private BuildForumPostSubject(formData: SeraphApplicationFormData): string {
+        let preferredTeams: string = formData.TeamsApplyingFor.reduce((prevValue: string, currValue: string) => {
+            if (currValue.indexOf("Membership") > -1) {
+                return `${prevValue}, M`;
+            }
+
+            return `${prevValue}, ${currValue[0]}`;
+        }, "").substring(2);
+
+        let characterName = formData.CharacterNameAndServer.split(" ")[0];
+
+        return `(${preferredTeams}) ${characterName}, ${formData.MainSpec} ${formData.Class}`;
     }
 
-    private async PostMessage(page: Page, forumPost: { subject: string, message: string }): Promise<void> {
+    private BuildForumPostMessage(formData: SeraphApplicationFormData): string {
+        let message = `Battle Tag:\n${formData.BattleTag}\n\n`;
+        message += `Discord Tag:\n${formData.DiscordTag}\n\n`;
+        message += `Character Name & Server:\n${formData.CharacterNameAndServer}\n\n`;
+        message += `Class:\n${formData.Class}\n\n`;
+        message += `Main Spec:\n${formData.MainSpec}\n\n`;
+        message += `Viable Off-Spec(s) or Alts:\n${formData.OffspecsAndAlts}\n\n`;
+        message += `Specific Raiding & Guild History:\n${formData.RaidingHistory}\n\n`;
+        message += `Armory Link:\n${formData.ArmoryLink}\n\n`;
+        message += `Recent Raid Combat Logs:\n${formData.RecentCombatLogs}\n\n`;
+        message += `Please link a screenshot of your UI in combat:\n${formData.UIScreenshotLink}\n\n`;
+        message += `Which teams are you applying for?:\n${formData.TeamsApplyingFor.reduce((prevValue: string, currValue: string) => `${prevValue}\n${currValue}`)}\n\n`;
+        message += `Where did you hear about Seraph?:\n${formData.LearnAboutSeraph.reduce((prevValue: string, currValue: string) => `${prevValue}\n${currValue}`)}\n\n`;
+        return message += `Age & (Preferred) Gender:\n${formData.AgeAndGender}`
+    }
+
+    private async PostMessage(page: Page, subject: string, message: string): Promise<void> {
         await page.waitForSelector("input[name=\"subject\"]");
-        await page.type("input[name=\"subject\"]", forumPost.subject);
-        await page.type("div#message-box > textarea[name=\"message\"]", forumPost.message);
+        await page.type("input[name=\"subject\"]", subject);
+        await page.waitFor(500);
+        await page.type("div#message-box > textarea[name=\"message\"]", message);
         await page.click("input.default-submit-action[type=\"submit\"]");
     }
 

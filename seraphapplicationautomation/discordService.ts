@@ -1,5 +1,6 @@
 import { Logger } from "@azure/functions";
 import { RichEmbed, WebhookClient, WebhookMessageOptions } from "discord.js";
+import SeraphApplicationFormData from "./seraphApplicationFormData";
 
 const ClassColorCodeMap = {
     "Death Knight": 12853051,
@@ -42,12 +43,12 @@ export default class DiscordService {
         this.webhookClient = new WebhookClient(process.env.clientId, process.env.clientToken);
     }
 
-    public async SendApplicationNotification(formData: {string: (string[] | string)}, forumPostUrl: string): Promise<boolean> {
+    public async SendApplicationNotification(formData: SeraphApplicationFormData, forumPostUrl: string): Promise<boolean> {
         this.logger("POSTing form data to discord channel");
 
         try {
             await this.webhookClient.send(
-                DiscordService.GetMessageContent(formData["Which team(s) are you applying for?"], formData["Team Preference:"]), 
+                DiscordService.GetMessageContent(formData.TeamsApplyingFor, formData.TeamPreference), 
                 DiscordService.GetRequestOptions(formData, forumPostUrl));
             this.logger("Successfully posted form data to discord channel");
             return true;
@@ -57,7 +58,7 @@ export default class DiscordService {
         }
     }
 
-    private static GetRequestOptions(formData: {string: (string[] | string)}, forumPostUrl: string): any {
+    private static GetRequestOptions(formData: SeraphApplicationFormData, forumPostUrl: string): any {
         return <WebhookMessageOptions>{
             username: "Seraph Application Automation",
             avatarURL: "https://cdn.discordapp.com/icons/328648081597792268/cb0dfe6bdef6ee1a280a70f9fb4688ae.png?size=128",
@@ -66,61 +67,61 @@ export default class DiscordService {
                 <RichEmbed>{
                     title: "A new application has been posted to the forums for review",
                     url: forumPostUrl,
-                    color: ClassColorCodeMap[formData["Class:"]],
+                    color: ClassColorCodeMap[formData.Class],
                     fields: [
                         {
                             name: "Battle.Net",
-                            value: formData["Battle Tag:"],
+                            value: formData.BattleTag,
                             inline: true
                         },
                         {
                             name: "Discord Tag",
-                            value: formData["Discord Tag:"],
+                            value: formData.DiscordTag,
                             inline: true
                         },
                         {
                             name: "Age & (Preferred) Gender",
-                            value: formData["Age & (Preferred) Gender"],
+                            value: formData.AgeAndGender,
                             inline: true
                         },
                         {
                             name: "Character Name & Server",
-                            value: formData["Character Name & Server:"],
+                            value: formData.CharacterNameAndServer,
                             inline: true
                         },
                         {
                             name: "Main Spec",
-                            value: formData["Main Spec:"],
+                            value: formData.MainSpec,
                             inline: true
                         },
                         {
                             name: "Viable Off-Spec(s) or Alts",
-                            value: formData["Viable Off-Spec(s) or Alts:"] || "*none provided*",
+                            value: formData.OffspecsAndAlts || "*none provided*",
                         },
                         {
                             name: "Recent Combat Logs",
-                            value: formData["Recent Raid Combat Logs:"],
+                            value: formData.RecentCombatLogs,
                         },
                         {
                             name: "WoW Armory",
-                            value: `[Armory Link](${formData["Armory Link:"]})`,
+                            value: `[Armory Link](${formData.ArmoryLink})`,
                             inline: true
                         },
                         {
                             name: "Specific Raiding & Guild History",
-                            value: formData["Specific Raiding & Guild History:"] || "*none provided*"
+                            value: formData.RaidingHistory || "*none provided*"
                         },
                         {
                             name: "Applicant Note",
-                            value: formData["Anything else you would like us to know:"] || "*none provided*"
+                            value: formData.ApplicantNote || "*none provided*"
                         },
                         {
                             name: "Where did you hear about Seraph?",
-                            value: formData["Where did you hear about Seraph?"].reduce((prev: string, curr: string) => `${prev}\n  * ${curr}`)
+                            value: formData.LearnAboutSeraph.reduce((prev: string, curr: string) => `${prev}\n  * ${curr}`)
                         }
                     ],
                     image: {
-                        url: formData["Please link a screenshot of your UI in combat:"]
+                        url: formData.UIScreenshotLink
                     },
                     footer: {
                         text: `Posted at: ${new Date().toDateString()} ${new Date().toTimeString()}`
@@ -133,10 +134,10 @@ export default class DiscordService {
     private static GetMessageContent(appedTeams: string[], teamPreference: string): string {
         const appedTeamTags = appedTeams.reduce((prevPref: string, currentPref: string) => {
             if (currentPref === "General Membership") {
-                return prevPref;
+                return `prevPref ${currentPref}`;
             }
 
-            return `${prevPref} <@&${RoleIds[(+currentPref[0])-1]}>`
+            return `${prevPref} <@&${RoleIds[(+currentPref[0])-1]}> (R${currentPref[0]})`
         }, "");
 
         const prefenceSnippet = appedTeams.length > 1 && teamPreference ? `Team Preference: ${teamPreference}` : "Team Preference: No preference given";
