@@ -10,15 +10,15 @@
     "test": "echo \"No tests yet...\""
   },
   "dependencies": {
-    "@types/puppeteer": "^2.0.0",
+    "@azure/functions": "^1.0.2-beta2",
     "discord.js": "^11.5.1",
     "puppeteer": "^2.0.0",
     "request": "^2.88.0",
     "request-promise-native": "^1.0.8"
   },
   "devDependencies": {
-    "@azure/functions": "^1.0.2-beta2",
-    "@types/node": "^12.12.14",
+    "@types/node": "^12.12.17",
+    "@types/puppeteer": "^2.0.0",
     "@types/request-promise-native": "^1.0.17",
     "typescript": "^3.3.3"
   }
