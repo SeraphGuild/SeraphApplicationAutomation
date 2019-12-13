@@ -1,4 +1,4 @@
-import { launch, Browser, LaunchOptions, Page } from "puppeteer";
+import { connect, Browser, LaunchOptions, Page } from "puppeteer";
 import { Logger } from "@azure/functions";
 import SeraphApplicationFormData from "./seraphApplicationFormData";
 
@@ -13,7 +13,9 @@ export default class ForumPostService {
         this.logger("beginning forum posting");
 
         try {
-            let browser: Browser = await launch();
+            let browser: Browser = await connect({
+                browserWSEndpoint: `wss://chrome.browserless.io?token=${process.env.browserlessIOToken}`
+            });
             let page: Page = await this.NavigateToForumWebsite(browser);
 
             await this.LoginToForum(page, process.env.forumUsername, process.env.forumPassword);
