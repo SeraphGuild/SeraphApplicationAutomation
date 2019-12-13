@@ -17,7 +17,20 @@ function onSubmit(e) {
   };
   
   Logger.log("constructed request body: " + JSON.stringify(response));
-  Logger.log("sending request to " + url);6
-  var response = UrlFetchApp.fetch(url, options);
-  Logger.log("response received: " + JSON.stringify(response.getContentText()));
+  Logger.log("sending request to " + url);
+  
+  var response = null
+  
+  try {
+    var response = UrlFetchApp.fetch(url, options);
+    Logger.log("response received: " + JSON.stringify(response.getContentText()));
+  }
+  catch (err) {
+    if (("" + err).indexOf("Timeout") > -1) {
+      Logger.log("Timeout occured. This is expected due to remote headless browser operations");
+    }
+    else {
+      throw err
+    }
+  }  
 }

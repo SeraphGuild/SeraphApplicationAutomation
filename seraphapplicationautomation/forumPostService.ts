@@ -12,8 +12,10 @@ export default class ForumPostService {
     public async PostToRecruitmentForum(formData: SeraphApplicationFormData): Promise<string> {
         this.logger("beginning forum posting");
 
+        let browser: Browser = null;
+
         try {
-            let browser: Browser = await connect({
+            browser = await connect({
                 browserWSEndpoint: `wss://chrome.browserless.io?token=${process.env.browserlessIOToken}`
             });
             let page: Page = await this.NavigateToForumWebsite(browser);
@@ -26,11 +28,12 @@ export default class ForumPostService {
 
             await this.PostMessage(page, subject, message);
             let forumPostUrl: string = await this.GetForumPostUrl(page);
-
+            browser.close();
             this.logger("Successfully posted application to the forum");
             return forumPostUrl;
         } catch (ex) {
-            this.logger(`An exception occured while sending the request: ${ex}`);
+            browser.close();
+            this.logger(`An exception occured while sending the request: ${ex.message}`);
             throw ex;
         }
     }

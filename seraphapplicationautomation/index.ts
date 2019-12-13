@@ -13,9 +13,15 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
     try {
         forumPostUrl = await forumPostService.PostToRecruitmentForum(formData);
     } catch (ex) {
-        context.log(`An expcetion occurred while posting to the forum: ${ex}`);
+        context.log(`An expcetion occurred while posting to the forum: ${ex.message}`);
         context.res = {
             status: 500,
+            headers: {
+                "Content-Type": "application/json" 
+            },
+            body: {
+                message: ex.message
+            }
         };
 
         return;
