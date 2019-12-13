@@ -140,8 +140,8 @@ export default class DiscordService {
             return `${prevPref} <@&${RoleIds[(+currentPref[0])-1]}> (R${currentPref[0]})`
         }, "");
 
-        const prefenceSnippet = appedTeams.length > 1 && teamPreference ? `Team Preference: ${teamPreference}` : "Team Preference: No preference given";
+        const prefenceSnippet = `Team Preference: ${(teamPreference ? teamPreference : "No preference given")}`;
 
-        return `A new guild application has been submitted for ${appedTeamTags}${appedTeams.length > 1 ? "\n" : ""}${prefenceSnippet}`;
+        return `A new guild application has been submitted for ${appedTeamTags}\n${prefenceSnippet}`;
     }
 }
