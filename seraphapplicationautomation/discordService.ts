@@ -134,6 +134,6 @@ export default class DiscordService {
 
         const prefenceSnippet = `Team Preference: ${(teamPreference ? teamPreference : "No preference given")}`;
 
-        return `A new guild application has been submitted for ${appedTeamTags}\n${prefenceSnippet}`;
+        return `A new guild application has been submitted for${appedTeamTags}\n${prefenceSnippet}`;
     }
 }
