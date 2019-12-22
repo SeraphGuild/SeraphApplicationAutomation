@@ -85,7 +85,8 @@ export default class ForumPostService {
         message += `Armory Link:\n${formData.ArmoryLink}\n\n`;
         message += `Recent Raid Combat Logs:\n${formData.RecentCombatLogs}\n\n`;
         message += `Please link a screenshot of your UI in combat:\n${formData.UIScreenshotLink}\n\n`;
-        message += `Which teams are you applying for?:\n${formData.TeamsApplyingFor.reduce((prevValue: string, currValue: string) => `${prevValue}\n${currValue}`)}\n\n`;
+        message += `Which teams are you applying for?:\n${formData.TeamsApplyingFor.reduce((prevValue: string, currValue: string) => `${prevValue}\n${currValue}`)}\n`;
+        message += `Team preference: ${formData.TeamPreference || 'No preference given'}\n\n`
         message += `Where did you hear about Seraph?:\n${formData.LearnAboutSeraph.reduce((prevValue: string, currValue: string) => `${prevValue}\n${currValue}`)}\n\n`;
         return message += `Age & (Preferred) Gender:\n${formData.AgeAndGender}`
     }
