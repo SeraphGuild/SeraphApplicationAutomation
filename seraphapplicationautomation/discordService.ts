@@ -109,11 +109,11 @@ export default class DiscordService {
                         },
                         {
                             name: "Specific Raiding & Guild History",
-                            value: formData.RaidingHistory || "*none provided*"
+                            value: formData.RaidingHistory && (formData.RaidingHistory.length > 1024 ? (formData.RaidingHistory.substr(0, 1021) + "..."))  || "*none provided*"
                         },
                         {
                             name: "Applicant Note",
-                            value: formData.ApplicantNote || "*none provided*"
+                            value: formData.ApplicantNote && (formData.ApplicantNote.length > 1024 ? (formData.ApplicantNote.substr(0, 1021) + "...")) || "*none provided*"
                         },
                         {
                             name: "Where did you hear about Seraph?",
@@ -134,7 +134,7 @@ export default class DiscordService {
     private static GetMessageContent(appedTeams: string[], teamPreference: string): string {
         const appedTeamTags = appedTeams.reduce((prevPref: string, currentPref: string) => {
             if (currentPref === "General Membership") {
-                return `prevPref ${currentPref}`;
+                return `${prevPref} and ${currentPref}`;
             }
 
             return `${prevPref} <@&${RoleIds[(+currentPref[0])-1]}> (R${currentPref[0]})`

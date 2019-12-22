@@ -6,12 +6,14 @@ import SeraphApplicationFormData from "./seraphApplicationFormData";
 const httpTrigger: AzureFunction = async function (context: Context, req: HttpRequest): Promise<void> {
     context.log(`application received: ${JSON.stringify(req.body)}`);
     
+    let forumPostUrl : string = req.params['forumlink'];
     let formData = new SeraphApplicationFormData(req.body);
     let forumPostService: ForumPostService = new ForumPostService(context.log);
 
-    let forumPostUrl = "";
     try {
-        forumPostUrl = await forumPostService.PostToRecruitmentForum(formData);
+        if (Boolean(forumPostUrl)) {
+            forumPostUrl = await forumPostService.PostToRecruitmentForum(formData);
+        }
     } catch (ex) {
         context.log(`An expcetion occurred while posting to the forum: ${ex.message}`);
         context.res = {
