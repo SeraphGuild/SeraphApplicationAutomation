@@ -17,21 +17,13 @@ const ClassColorCodeMap = {
     "Warrior": 13081710
 }
 
-// const RoleIds: number[] = [
-//     654076174250803220,
-//     654076235537842196,
-//     0,
-//     0,
-//     654076254953144371
-// ]
-
-const RoleIds: number[] = [
-    352083357376708608,
-    352083485420290058,
-    438160508714221578,
-    579784598263693313,
-    595341062000738364,
-    648692259927359503
+const RoleIds: string[] = [
+    '352083357376708608',
+    '352083485420290058',
+    '438160508714221578',
+    '579784598263693313',
+    '595341062000738364',
+    '648692259927359503'
 ]
 
 export default class DiscordService {
@@ -109,11 +101,11 @@ export default class DiscordService {
                         },
                         {
                             name: "Specific Raiding & Guild History",
-                            value: formData.RaidingHistory && (formData.RaidingHistory.length > 1024 ? (formData.RaidingHistory.substr(0, 1021) + "..."))  || "*none provided*"
+                            value: formData.RaidingHistory && (formData.RaidingHistory.length > 1024 ? (formData.RaidingHistory.substr(0, 1021).trim() + "...") : formData.RaidingHistory) || "*none provided*"
                         },
                         {
                             name: "Applicant Note",
-                            value: formData.ApplicantNote && (formData.ApplicantNote.length > 1024 ? (formData.ApplicantNote.substr(0, 1021) + "...")) || "*none provided*"
+                            value: formData.ApplicantNote && (formData.ApplicantNote.length > 1024 ? (formData.ApplicantNote.substr(0, 1021).trim() + "...") : formData.ApplicantNote) || "*none provided*"
                         },
                         {
                             name: "Where did you hear about Seraph?",
@@ -137,7 +129,7 @@ export default class DiscordService {
                 return `${prevPref} and ${currentPref}`;
             }
 
-            return `${prevPref} <@&${RoleIds[(+currentPref[0])-1]}> (R${currentPref[0]})`
+            return `${prevPref} <@&${RoleIds[(+currentPref[0])-1]}>`
         }, "");
 
         const prefenceSnippet = `Team Preference: ${(teamPreference ? teamPreference : "No preference given")}`;
