@@ -26,6 +26,10 @@ const RoleIds: string[] = [
     '648692259927359503'
 ]
 
+const OnegUserId: string = '228326990267023370';
+
+const VelUserId: string = '329793209347604481';
+
 export default class DiscordService {
     private logger: Logger;
     private webhookClient: WebhookClient;
@@ -126,7 +130,7 @@ export default class DiscordService {
     private static GetMessageContent(appedTeams: string[], teamPreference: string): string {
         const appedTeamTags = appedTeams.reduce((prevPref: string, currentPref: string) => {
             if (currentPref === "General Membership") {
-                return `${prevPref} and ${currentPref}`;
+                return `${prevPref ? `${prevPref} and ` : ''}${currentPref} (<@${OnegUserId}>, <@${VelUserId}>)`;
             }
 
             return `${prevPref} <@&${RoleIds[(+currentPref[0])-1]}>`
@@ -134,6 +138,6 @@ export default class DiscordService {
 
         const prefenceSnippet = `Team Preference: ${(teamPreference ? teamPreference : "No preference given")}`;
 
-        return `A new guild application has been submitted for${appedTeamTags}\n${prefenceSnippet}`;
+        return `A new guild application has been submitted for ${appedTeamTags}\n${prefenceSnippet}`;
     }
 }
