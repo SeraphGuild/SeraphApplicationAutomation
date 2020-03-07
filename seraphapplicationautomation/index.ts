@@ -26,7 +26,7 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
             }
         };
 
-        return;
+        throw ex;
     }
 
     let discordService: DiscordService = new DiscordService(context.log);
@@ -36,6 +36,10 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
     };
 
     context.log(`processed application. Status Code ${statusCode}`);
+
+    if (statusCode === 500) {
+        throw new Error("Failed to post application to discord");
+    }
 };
 
 export default httpTrigger;

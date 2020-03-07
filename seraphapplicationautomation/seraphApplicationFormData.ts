@@ -9,7 +9,6 @@ export default class SeraphApplicationFormData {
         this.RaidingHistory = formData["Specific Raiding & Guild History:"];
         this.ArmoryLink = formData["Armory Link:"];
         this.RecentCombatLogs = formData["Recent Raid Combat Logs:"];
-        this.UIScreenshotLink = formData["Please link a screenshot of your UI in combat:"];
         this.TeamsApplyingFor = formData["Which team(s) are you applying for?"];
         this.TeamPreference = formData["Team Preference:"];
         this.LearnAboutSeraph = formData["Where did you hear about Seraph?"];
@@ -34,8 +33,6 @@ export default class SeraphApplicationFormData {
     public ArmoryLink: string;
 
     public RecentCombatLogs: string;
-
-    public UIScreenshotLink: string;
 
     public TeamsApplyingFor: string[];
 

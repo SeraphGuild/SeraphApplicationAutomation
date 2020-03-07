@@ -116,9 +116,6 @@ export default class DiscordService {
                             value: formData.LearnAboutSeraph.reduce((prev: string, curr: string) => `${prev}\n  * ${curr}`)
                         }
                     ],
-                    image: {
-                        url: formData.UIScreenshotLink
-                    },
                     footer: {
                         text: `Posted at: ${new Date().toDateString()} ${new Date().toTimeString()}`
                     }
