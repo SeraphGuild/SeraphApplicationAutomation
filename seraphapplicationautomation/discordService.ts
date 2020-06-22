@@ -127,7 +127,7 @@ export default class DiscordService {
     private static GetMessageContent(appedTeams: string[], teamPreference: string): string {
         const appedTeamTags = appedTeams.reduce((prevPref: string, currentPref: string) => {
             if (currentPref === "General Membership") {
-                return `${prevPref ? `${prevPref} and ` : ''}${currentPref} (<@${OnegUserId}>, <@${VelUserId}>, <@${SawftyUserId})`;
+                return `${prevPref ? `${prevPref} and ` : ''}${currentPref} (<@${OnegUserId}>, <@${VelUserId}>, <@${SawftyUserId}>)`;
             }
 
             return `${prevPref} <@&${RoleIds[(+currentPref[0])-1]}>`
