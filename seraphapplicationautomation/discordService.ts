@@ -17,14 +17,13 @@ const ClassColorCodeMap = {
     "Warrior": 13081710
 }
 
-const RoleIds: string[] = [
-    '352083357376708608',
-    '352083485420290058',
-    '438160508714221578',
-    '579784598263693313',
-    '595341062000738364',
-    '648692259927359503'
-]
+const TeamRoleIds: object = {
+    "Color Blind": "352083357376708608",
+    "Insomnia": "438160508714221578",
+    "Clockwise": "579784598263693313",
+    "Loud Noises!": "595341062000738364",
+    "Barely Heroic": "648692259927359503"
+}
 
 const bereUserId: string = '251555414716448769';
 const abyssUserId: string = '149749214937743360';
@@ -125,12 +124,12 @@ export default class DiscordService {
     }
 
     private static GetMessageContent(appedTeams: string[], teamPreference: string): string {
-        const appedTeamTags = appedTeams.reduce((prevPref: string, currentPref: string) => {
-            if (currentPref === "General Membership") {
-                return `${prevPref ? `${prevPref} and ` : ''}${currentPref} (<@${bereUserId}>, <@${abyssUserId}>, <@${SawftyUserId}>)`;
+        const appedTeamTags = appedTeams.reduce((appedTeamString: string, currentAppedTeam: string) => {
+            if (currentAppedTeam === "General Membership") {
+                return `${appedTeamString ? `${appedTeamString} and ` : ''}${currentAppedTeam} (<@${bereUserId}>, <@${abyssUserId}>, <@${SawftyUserId}>)`;
             }
 
-            return `${prevPref} <@&${RoleIds[(+currentPref[0])-1]}>`
+            return `${appedTeamString} <@&${TeamRoleIds[currentAppedTeam]}>`
         }, "");
 
         const prefenceSnippet = `Team Preference: ${(teamPreference ? teamPreference : "No preference given")}`;
