@@ -20,7 +20,7 @@ const ClassColorCodeMap = {
 const TeamRoleIds: object = {
     "1. Color Blind": "352083357376708608",
     "3. Raid Three": "438160508714221578",
-    "4. Clockwise": "579784598263693313",
+    "4. Seraph University": "579784598263693313",
     "5. Loud Noises!": "595341062000738364",
     "6. Barely Heroic": "648692259927359503"
 }
