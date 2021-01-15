@@ -125,7 +125,7 @@ export default class DiscordService {
     private static GetMessageContent(appedTeams: string[], teamPreference: string): string {
         const appedTeamTags = appedTeams.reduce((appedTeamString: string, currentAppedTeam: string) => {
             if (currentAppedTeam === "General Membership") {
-                return `${appedTeamString ? `${appedTeamString} and ` : ''}${currentAppedTeam} (<@${AdminRoleId}>)`;
+                return `${appedTeamString ? `${appedTeamString} and ` : ''}${currentAppedTeam} (<@&${AdminRoleId}>)`;
             }
 
             return `${appedTeamString} <@&${TeamRoleIds[currentAppedTeam]}>`
