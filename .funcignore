@@ -1,1 +1,12 @@
+.vscode
+.git*
+
+*.ts
+*.dat
 *.js.map
+
+LICENSE
+local.settings.json
+OnFormSubmitTrigger.gs
+package-lock.json
+tsconfig.json

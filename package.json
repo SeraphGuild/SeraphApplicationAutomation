@@ -8,7 +8,7 @@
     "url": "https://github.com/MikeCook9994/SeraphApplicationAutomation"
   },
   "scripts": {
-    "build": "tsc & copyfiles .funcignore host.json package.json ./node_modules/** dist",
+    "build": "tsc",
     "watch": "tsc -w",
     "prestart": "npm run build",
     "start": "func start",

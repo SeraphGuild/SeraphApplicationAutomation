@@ -2,7 +2,6 @@ import { AzureFunction, Context, HttpRequest } from "@azure/functions"
 import DiscordService from "./discordService";
 import ForumPostService from "./forumPostService";
 import SeraphApplicationFormData from "./seraphApplicationFormData";
-import * as functionConfig from "./function.json";
 
 const httpTrigger: AzureFunction = async function (context: Context, req: HttpRequest): Promise<void> {
     context.log(`application received: ${JSON.stringify(req.body)}`);
