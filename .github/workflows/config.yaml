@@ -11,10 +11,13 @@ env:
 
 jobs:
   configure:
-    runs-on: ubuntu-latest
-    environment: production
+    runs-on: windows-latest
     steps:
-    - name: 'Push Azure App Service Settings'
+    - name: 'Authenticate with Azure'
+      uses: azure/login@v1
+      with: 
+        creds: '${{ secrets.AZURE_CREDENTIALS }}'
+    - name: 'Push Configuration Settings'
       uses: azure/appservice-settings@v1
       with:
         app-name: ${{ env.AZURE_FUNCTIONAPP_NAME }}
