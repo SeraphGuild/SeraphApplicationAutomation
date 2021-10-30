@@ -1,0 +1,22 @@
+name: Configure Function App
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      [master]
+
+env:
+  AZURE_FUNCTIONAPP_NAME: func-applicationautomation-centralus-001
+
+jobs:
+  configure:
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+    - name: 'Push Azure App Service Settings'
+      uses: azure/appservice-settings@v1
+      with:
+        app-name: ${{ env.AZURE_FUNCTIONAPP_NAME }}
+        app-settings-json: '${{ secrets.APP_SETTINGS }}'
+      id: settings
