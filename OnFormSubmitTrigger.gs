@@ -9,7 +9,7 @@ function onSubmit(e) {
     formData[items[i].getItem().getTitle()] = items[i].getResponse();
   }
   
-  var url = "https://seraphapplicationautomationv2.azurewebsites.net/api/seraphapplicationautomation";
+  var url = "https://func-applicationautomation-centralus-001.azurewebsites.net/api/applicationautomation";
   var options = {
     "method": "post",
     "contentType": "application/json",

@@ -1,9 +1,14 @@
 {
   "name": "seraph-application-automation",
   "version": "1.0.0",
-  "description": "",
+  "description": "provides the serverless code requisite to handle new seraph guild member applications",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/MikeCook9994/SeraphApplicationAutomation"
+  },
   "scripts": {
-    "build": "tsc ",
+    "build": "tsc & copyfiles .funcignore host.json package.json ./node_modules/** dist",
     "watch": "tsc -w",
     "prestart": "npm run build",
     "start": "func start",
@@ -11,12 +16,14 @@
   },
   "dependencies": {
     "@azure/functions": "1.2.3",
+    "@discordjs/uws": "10.149.0",
     "discord.js": "11.5.1",
     "puppeteer": "10.4.0"
   },
   "devDependencies": {
     "@types/node": "16.11.6",
     "@types/puppeteer": "5.4.4",
+    "copyfiles": "2.4.1",
     "typescript": "4.4.4"
   }
 }
