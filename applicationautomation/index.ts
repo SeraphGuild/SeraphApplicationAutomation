@@ -15,7 +15,7 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
             forumPostUrl = await forumPostService.PostToRecruitmentForum(formData);
         }
     } catch (ex) {
-        context.log(`An expcetion occurred while posting to the forum: ${ex.message}`);
+        context.log(`An exception occurred while posting to the forum: ${ex.message}`);
         context.res = {
             status: 500,
             headers: {
