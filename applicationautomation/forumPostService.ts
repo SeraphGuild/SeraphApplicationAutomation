@@ -31,7 +31,9 @@ export default class ForumPostService {
             this.logger("Successfully posted application to the forum");
             return forumPostUrl;
         } catch (ex) {
-            browser.close();
+            if (browser) {
+                browser.close();
+            }
             this.logger(`An exception occured while sending the request: ${ex.message}`);
             throw ex;
         }
