@@ -1,6 +1,10 @@
-node_modules
 .git*
 .vscode
+node_modules
+
+test
 local.settings.json
 OnFormSubmitTrigger.gs
-test
+*.js.map
+*.ts
+sample.dat

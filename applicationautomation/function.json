@@ -15,5 +15,5 @@
       "name": "res"
     }
   ],
-  "scriptFile": "../dist/seraphapplicationautomation/index.js"
+  "scriptFile": "../dist/applicationautomation/index.js"
 }
