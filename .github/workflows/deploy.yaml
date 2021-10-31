@@ -28,6 +28,7 @@ jobs:
         npm install
         npm run build
     - name: 'Run Azure Functions Action'
-      shell: bash
-      run: |
-        func azure functionapp publish ${{ env.AZURE_FUNCTIONAPP_NAME }} --build remote
+      uses: azure/CLI@v1
+      with:
+        inlineScript: |
+          func azure functionapp publish ${{ env.AZURE_FUNCTIONAPP_NAME }} --build remote
