@@ -26,9 +26,9 @@ jobs:
       shell: bash
       run: |
         npm install
+        npm install -g azure-functions-core-tools@3 --unsafe-perm true
         npm run build
     - name: 'Run Azure Functions Action'
-      uses: azure/CLI@v1
-      with:
-        inlineScript: |
-          func azure functionapp publish ${{ env.AZURE_FUNCTIONAPP_NAME }} --build remote
+      shell: bash
+      run: |
+        func azure functionapp publish $appName --build remote
