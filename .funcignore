@@ -1,7 +1,7 @@
-.vscode
+node_modules
 .git*
+.vscode
 
-*.ts
 *.dat
 *.js.map
 
@@ -9,5 +9,3 @@ LICENSE
 local.settings.json
 app.settings.json
 OnFormSubmitTrigger.gs
-package-lock.json
-tsconfig.json
