@@ -4,6 +4,7 @@ node_modules
 
 *.dat
 *.js.map
+*.md
 
 LICENSE
 local.settings.json
