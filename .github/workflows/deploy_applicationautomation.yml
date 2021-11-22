@@ -11,6 +11,7 @@ on:
 
 env:
   NODE_VERSION: '14.x' # set this to the node version to use (supports 8.x, 10.x, 12.x)
+  AZURE_FUNCTIONAPP_NAME: func-applicationautomation-centralus-001
 
 jobs:
   build-and-deploy:
@@ -33,7 +34,7 @@ jobs:
       - name: 'Run Azure Functions Action'
         shell: bash
         run: |
-          func azure fsunctionapp publish $appName --build remote
+          func azure functionapp publish $appName --build remote
 
       - name: 'Authenticate with Azure'
         uses: azure/login@v1
