@@ -39,7 +39,7 @@ jobs:
       - name: 'Run Azure Functions Action'
         shell: bash
         run: |
-          func azure functionapp publish ${{ env.AZURE_FUNCTIONAPP_NAME }} --build remote
+          func azure functionapp publish ${{ env.AZURE_FUNCTIONAPP_NAME }} --build remote --typescript
 
       - name: 'Push Configuration Settings'
         uses: azure/appservice-settings@v1
