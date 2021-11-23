@@ -1,4 +1,4 @@
-import StringKeyMap from "./common/StringKeyMap.js";
+import StringKeyMap from "./common/stringKeyMap.js";
 
 export default class SeraphApplicationFormData {
     constructor(formData: StringKeyMap<string | string[]>) {

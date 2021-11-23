@@ -1,7 +1,7 @@
 import { Logger } from '@azure/functions';
 import { EmbedField, MessageEmbed, WebhookClient, WebhookClientData, WebhookMessageOptions } from 'discord.js';
 
-import SeraphApplicationFormData from './seraphApplicationFormData.js';
+import SeraphApplicationFormData from '../model/seraphApplicationFormData.js';
 
 const ClassColorCodeMap: Map<string, number> = new Map<string, number>([
     ['Death Knight', 12853051],

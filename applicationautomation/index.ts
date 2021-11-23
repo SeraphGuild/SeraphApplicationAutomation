@@ -1,7 +1,8 @@
 import { AzureFunction, Context, HttpRequest } from '@azure/functions'
 
-import DiscordService from './discordService.js';
-import StringKeyMap from './model/common/StringKeyMap.js';
+import DiscordService from './service/discordService.js';
+
+import StringKeyMap from './model/common/stringKeyMap.js';
 import SeraphApplicationFormData from './model/seraphApplicationFormData.js';
 
 const httpTrigger: AzureFunction = async function (context: Context, req: HttpRequest): Promise<void> {
