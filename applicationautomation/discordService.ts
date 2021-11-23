@@ -1,5 +1,5 @@
 import { Logger } from "@azure/functions";
-import { RichEmbed, WebhookClient, WebhookMessageOptions } from "discord.js";
+import { MessageEmbed, WebhookClient, WebhookClientData, WebhookMessageOptions } from "discord.js";
 import SeraphApplicationFormData from "./seraphApplicationFormData";
 
 const ClassColorCodeMap = {
@@ -34,31 +34,38 @@ export default class DiscordService {
 
     constructor(logger: Logger) {
         this.logger = logger;
-        this.webhookClient = new WebhookClient(process.env.clientId, process.env.clientToken);
+
+        let clientData: WebhookClientData = { 
+            id: process.env.clientId, 
+            token: process.env.clientToken
+        }
+
+        this.webhookClient = new WebhookClient(clientData);
     }
 
     public async SendApplicationNotification(formData: SeraphApplicationFormData, forumPostUrl: string): Promise<boolean> {
         this.logger("POSTing form data to discord channel");
+        let requestOptions: WebhookMessageOptions = DiscordService.GetRequestOptions(formData, forumPostUrl);
 
         try {
-            await this.webhookClient.send(
-                DiscordService.GetMessageContent(formData.TeamsApplyingFor, formData.TeamPreference), 
-                DiscordService.GetRequestOptions(formData, forumPostUrl));
-            this.logger("Successfully posted form data to discord channel");
-            return true;
+            await this.webhookClient.send(requestOptions);
         } catch (ex) {
             this.logger(`An exception occured while sending the request: ${ex}`);
             return false;
         }
+
+        this.logger("Successfully posted form data to discord channel");
+        return true;
     }
 
     private static GetRequestOptions(formData: SeraphApplicationFormData, forumPostUrl: string): any {
         return <WebhookMessageOptions>{
+            content: DiscordService.GetMessageContent(formData.TeamsApplyingFor, formData.TeamPreference),
             username: "Seraph Application Automation",
             avatarURL: "https://cdn.discordapp.com/icons/328648081597792268/cb0dfe6bdef6ee1a280a70f9fb4688ae.png?size=128",
             tts: false,
             embeds: [
-                <RichEmbed>{
+                <MessageEmbed>{
                     title: "A new application has been posted to the forums for review",
                     url: forumPostUrl,
                     color: ClassColorCodeMap[formData.Class],
