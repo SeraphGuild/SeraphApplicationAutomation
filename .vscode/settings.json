@@ -1,7 +1,7 @@
 {
     "azureFunctions.deploySubpath": ".",
     "azureFunctions.projectLanguage": "TypeScript",
-    "azureFunctions.projectRuntime": "~3",
-    "azureFunctions.scmDoBuildDuringDeployment": true,
+    "azureFunctions.projectRuntime": "~4",
+    "azureFunctions.scmDoBuildDuringDeployment": false,
     "debug.internalConsoleOptions": "neverOpen",
 }

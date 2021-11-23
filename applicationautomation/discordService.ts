@@ -1,32 +1,33 @@
-import { Logger } from "@azure/functions";
-import { MessageEmbed, WebhookClient, WebhookClientData, WebhookMessageOptions } from "discord.js";
-import SeraphApplicationFormData from "./seraphApplicationFormData";
+import { Logger } from '@azure/functions';
+import { EmbedField, MessageEmbed, WebhookClient, WebhookClientData, WebhookMessageOptions } from 'discord.js';
 
-const ClassColorCodeMap = {
-    "Death Knight": 12853051,
-    "Demon Hunter": 10694857,
-    "Druid": 16743690,
-    "Hunter": 11129457,
-    "Mage": 4245483,
-    "Monk": 65430,
-    "Paladin": 16092346,
-    "Priest": 16777215,
-    "Rogue": 16774505,
-    "Shaman": 28894,
-    "Warlock": 8882157,
-    "Warrior": 13081710
-}
+import SeraphApplicationFormData from './seraphApplicationFormData.js';
 
-const TeamRoleIds: object = {
-    "1. Color Blind": "352083357376708608",
-    "2. Casually Dysfunctional": "352083485420290058",
-    "3. Last Pull": "438160508714221578",
-    "4. Misfits": "579784598263693313",
-    "5. Loud Noises!": "595341062000738364",
-    "6. Barely Heroic": "648692259927359503"
-}
+const ClassColorCodeMap: Map<string, number> = new Map<string, number>([
+    ['Death Knight', 12853051],
+    ['Demon Hunter', 10694857],
+    ['Druid', 16743690],
+    ['Hunter', 11129457],
+    ['Mage', 4245483],
+    ['Monk', 65430],
+    ['Paladin', 16092346],
+    ['Priest', 16777215],
+    ['Rogue', 16774505],
+    ['Shaman', 28894],
+    ['Warlock', 8882157],
+    ['Warrior', 13081710]
+]);
 
-const AdminRoleId: string = "328651719158267905";
+const TeamRoleIds: Map<string, string> = new Map<string, string>([
+    ['1. Color Blind', '352083357376708608'],
+    ['2. Casually Dysfunctional', '352083485420290058'],
+    ['3. Last Pull', '438160508714221578'],
+    ['4. Misfits', '579784598263693313'],
+    ['5. Loud Noises!', '595341062000738364'],
+    ['6. Barely Heroic', '648692259927359503']
+]);
+
+const AdminRoleId: string = '328651719158267905';
 
 export default class DiscordService {
     private logger: Logger;
@@ -35,17 +36,17 @@ export default class DiscordService {
     constructor(logger: Logger) {
         this.logger = logger;
 
-        let clientData: WebhookClientData = { 
-            id: process.env.clientId, 
-            token: process.env.clientToken
+        let clientData: WebhookClientData = {
+            id: process.env.clientId ?? '',
+            token: process.env.clientToken ?? ''
         }
 
         this.webhookClient = new WebhookClient(clientData);
     }
 
-    public async SendApplicationNotification(formData: SeraphApplicationFormData, forumPostUrl: string): Promise<boolean> {
-        this.logger("POSTing form data to discord channel");
-        let requestOptions: WebhookMessageOptions = DiscordService.GetRequestOptions(formData, forumPostUrl);
+    public async SendApplicationNotification(formData: SeraphApplicationFormData): Promise<boolean> {
+        this.logger('POSTing form data to discord channel');
+        let requestOptions: WebhookMessageOptions = DiscordService.GetRequestOptions(formData);
 
         try {
             await this.webhookClient.send(requestOptions);
@@ -54,92 +55,72 @@ export default class DiscordService {
             return false;
         }
 
-        this.logger("Successfully posted form data to discord channel");
+        this.logger('Successfully posted form data to discord channel');
         return true;
     }
 
-    private static GetRequestOptions(formData: SeraphApplicationFormData, forumPostUrl: string): any {
+    private static GetRequestOptions(formData: SeraphApplicationFormData): WebhookMessageOptions {
+        let messageContent: string = DiscordService.GetMessageContent(formData.TeamsApplyingFor, formData.TeamPreference);
+        let messageEmbeds: MessageEmbed[] = [DiscordService.GetMessageEmbeds(formData)];
+
         return <WebhookMessageOptions>{
-            content: DiscordService.GetMessageContent(formData.TeamsApplyingFor, formData.TeamPreference),
-            username: "Seraph Application Automation",
-            avatarURL: "https://cdn.discordapp.com/icons/328648081597792268/cb0dfe6bdef6ee1a280a70f9fb4688ae.png?size=128",
+            content: messageContent,
+            username: 'Seraph Application Automation',
+            avatarURL: 'https://cdn.discordapp.com/icons/328648081597792268/cb0dfe6bdef6ee1a280a70f9fb4688ae.png?size=128',
             tts: false,
-            embeds: [
-                <MessageEmbed>{
-                    title: "A new application has been posted to the forums for review",
-                    url: forumPostUrl,
-                    color: ClassColorCodeMap[formData.Class],
-                    fields: [
-                        {
-                            name: "Battle.Net",
-                            value: formData.BattleTag,
-                            inline: true
-                        },
-                        {
-                            name: "Discord Tag",
-                            value: formData.DiscordTag,
-                            inline: true
-                        },
-                        {
-                            name: "Age & (Preferred) Gender",
-                            value: formData.AgeAndGender,
-                            inline: true
-                        },
-                        {
-                            name: "Character Name & Server",
-                            value: formData.CharacterNameAndServer,
-                            inline: true
-                        },
-                        {
-                            name: "Main Spec",
-                            value: formData.MainSpec,
-                            inline: true
-                        },
-                        {
-                            name: "Viable Off-Spec(s) or Alts",
-                            value: formData.OffspecsAndAlts || "*none provided*",
-                        },
-                        {
-                            name: "Recent Combat Logs",
-                            value: formData.RecentCombatLogs,
-                        },
-                        {
-                            name: "WoW Armory",
-                            value: `[Armory Link](${formData.ArmoryLink})`,
-                            inline: true
-                        },
-                        {
-                            name: "Specific Raiding & Guild History",
-                            value: formData.RaidingHistory && (formData.RaidingHistory.length > 1024 ? (formData.RaidingHistory.substr(0, 1021).trim() + "...") : formData.RaidingHistory) || "*none provided*"
-                        },
-                        {
-                            name: "Applicant Note",
-                            value: formData.ApplicantNote && (formData.ApplicantNote.length > 1024 ? (formData.ApplicantNote.substr(0, 1021).trim() + "...") : formData.ApplicantNote) || "*none provided*"
-                        },
-                        {
-                            name: "Where did you hear about Seraph?",
-                            value: formData.LearnAboutSeraph.reduce((prev: string, curr: string) => `${prev}\n  * ${curr}`)
-                        }
-                    ],
-                    footer: {
-                        text: `Posted at: ${new Date().toDateString()} ${new Date().toTimeString()}`
-                    }
-                }
-            ]
-        }
+            embeds: messageEmbeds
+        };
     }
 
     private static GetMessageContent(appedTeams: string[], teamPreference: string): string {
         const appedTeamTags = appedTeams.reduce((appedTeamString: string, currentAppedTeam: string) => {
-            if (currentAppedTeam === "General Membership") {
+            if (currentAppedTeam === 'General Membership') {
                 return `${appedTeamString ? `${appedTeamString} and ` : ''}${currentAppedTeam} (<@&${AdminRoleId}>)`;
             }
 
-            return `${appedTeamString} <@&${TeamRoleIds[currentAppedTeam]}>`
-        }, "");
+            return `${appedTeamString} <@&${TeamRoleIds.get(currentAppedTeam)}>`
+        }, '');
 
-        const prefenceSnippet = `Team Preference: ${(teamPreference ? teamPreference : "No preference given")}`;
+        const prefenceSnippet = `Team Preference: ${(teamPreference ? teamPreference : 'No preference given')}`;
 
         return `A new guild application has been submitted for ${appedTeamTags}\n${prefenceSnippet}`;
+    }
+
+    private static GetMessageEmbeds(formData: SeraphApplicationFormData) {
+        return <MessageEmbed>{
+            color: ClassColorCodeMap.get(formData.Class),
+            fields: [
+                DiscordService.GetEmbedField('Battle.Net', formData.BattleTag, true),
+                DiscordService.GetEmbedField('Discord Tag', formData.DiscordTag, true),
+                DiscordService.GetEmbedField('Age & (Preferred) Gender', formData.AgeAndGender, true),
+                DiscordService.GetEmbedField('Character Name & Server', formData.CharacterNameAndServer, true),
+                DiscordService.GetEmbedField('Main Spec', formData.MainSpec, true),
+                DiscordService.GetEmbedField('Viable Off-Spec(s) or Alts', formData.OffspecsAndAlts ?? '*none provided*'),
+                DiscordService.GetEmbedField('Recent Combat Logs', formData.RecentCombatLogs),
+                DiscordService.GetEmbedField('WoW Armory', `[Armory Link](${formData.ArmoryLink})`, true),
+                DiscordService.GetEmbedField('Specific Raiding & Guild History', DiscordService.FormatLongFormField(formData.RaidingHistory)),
+                DiscordService.GetEmbedField('Applicant Note', DiscordService.FormatLongFormField(formData.ApplicantNote)),
+                DiscordService.GetEmbedField('Where did you hear about Seraph?', formData.LearnAboutSeraph.reduce((prev: string, curr: string) => `${prev}\n  * ${curr}`)),
+            ],
+            footer: {
+                text: `Posted at: ${new Date().toDateString()} ${new Date().toTimeString()}`
+            }
+        };
+    }
+
+    private static FormatLongFormField(fieldValue: string): string {
+        if (fieldValue) {
+            return fieldValue.length > 1024 ? (fieldValue.substr(0, 1021).trim() + '...') : fieldValue;
+        }
+        
+        return '*none provided*';
+    }
+
+    private static GetEmbedField(name: string, value: string, inline: boolean = false): EmbedField {
+        return <EmbedField>{
+            name: name,
+            value: value,
+            inline: inline
+        }
     }
 }
