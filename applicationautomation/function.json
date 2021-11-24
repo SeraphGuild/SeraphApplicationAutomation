@@ -15,5 +15,5 @@
       "name": "res"
     }
   ],
-  "scriptFile": "../dist/applicationautomation/index.js"
+  "scriptFile": "../dist/applicationautomation/index.mjs"
 }

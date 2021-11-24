@@ -1,7 +1,8 @@
 import { Logger } from '@azure/functions';
 import { EmbedField, MessageEmbed, WebhookClient, WebhookClientData, WebhookMessageOptions } from 'discord.js';
+import { env } from 'process';
 
-import SeraphApplicationFormData from '../model/seraphApplicationFormData.js';
+import SeraphApplicationFormData from '../model/seraphApplicationFormData.mjs';
 
 const ClassColorCodeMap: Map<string, number> = new Map<string, number>([
     ['Death Knight', 12853051],
@@ -37,9 +38,9 @@ export default class DiscordService {
         this.logger = logger;
 
         let clientData: WebhookClientData = {
-            id: process.env.clientId ?? '',
-            token: process.env.clientToken ?? ''
-        }
+            id: env.clientId,
+            token: env.clientToken
+        } as WebhookClientData;
 
         this.webhookClient = new WebhookClient(clientData);
     }
@@ -63,13 +64,13 @@ export default class DiscordService {
         let messageContent: string = DiscordService.GetMessageContent(formData.TeamsApplyingFor, formData.TeamPreference);
         let messageEmbeds: MessageEmbed[] = [DiscordService.GetMessageEmbeds(formData)];
 
-        return <WebhookMessageOptions>{
+        return {
             content: messageContent,
             username: 'Seraph Application Automation',
             avatarURL: 'https://cdn.discordapp.com/icons/328648081597792268/cb0dfe6bdef6ee1a280a70f9fb4688ae.png?size=128',
             tts: false,
             embeds: messageEmbeds
-        };
+        } as WebhookMessageOptions;
     }
 
     private static GetMessageContent(appedTeams: string[], teamPreference: string): string {
@@ -87,7 +88,7 @@ export default class DiscordService {
     }
 
     private static GetMessageEmbeds(formData: SeraphApplicationFormData) {
-        return <MessageEmbed>{
+        return {
             color: ClassColorCodeMap.get(formData.Class),
             fields: [
                 DiscordService.GetEmbedField('Battle.Net', formData.BattleTag, true),
@@ -95,7 +96,7 @@ export default class DiscordService {
                 DiscordService.GetEmbedField('Age & (Preferred) Gender', formData.AgeAndGender, true),
                 DiscordService.GetEmbedField('Character Name & Server', formData.CharacterNameAndServer, true),
                 DiscordService.GetEmbedField('Main Spec', formData.MainSpec, true),
-                DiscordService.GetEmbedField('Viable Off-Spec(s) or Alts', formData.OffspecsAndAlts ?? '*none provided*'),
+                DiscordService.GetEmbedField('Viable Off-Spec(s) or Alts', formData.OffspecsAndAlts || '*none provided*'),
                 DiscordService.GetEmbedField('Recent Combat Logs', formData.RecentCombatLogs),
                 DiscordService.GetEmbedField('WoW Armory', `[Armory Link](${formData.ArmoryLink})`, true),
                 DiscordService.GetEmbedField('Specific Raiding & Guild History', DiscordService.FormatLongFormField(formData.RaidingHistory)),
@@ -105,7 +106,7 @@ export default class DiscordService {
             footer: {
                 text: `Posted at: ${new Date().toDateString()} ${new Date().toTimeString()}`
             }
-        };
+        } as MessageEmbed;
     }
 
     private static FormatLongFormField(fieldValue: string): string {
@@ -117,10 +118,10 @@ export default class DiscordService {
     }
 
     private static GetEmbedField(name: string, value: string, inline: boolean = false): EmbedField {
-        return <EmbedField>{
+        return {
             name: name,
             value: value,
             inline: inline
-        }
+        } as EmbedField;
     }
 }
