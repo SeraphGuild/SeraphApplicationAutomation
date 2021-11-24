@@ -1,5 +1,3 @@
-import StringKeyMap from './common/stringKeyMap.mjs';
-
 export default class SeraphApplicationFormData {
     constructor(formData: StringKeyMap<string | string[]>) {
         this.BattleTag = formData['Battle Tag:'] as string;

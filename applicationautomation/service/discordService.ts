@@ -2,7 +2,7 @@ import { Logger } from '@azure/functions';
 import { EmbedField, MessageEmbed, WebhookClient, WebhookClientData, WebhookMessageOptions } from 'discord.js';
 import { env } from 'process';
 
-import SeraphApplicationFormData from '../model/seraphApplicationFormData.mjs';
+import SeraphApplicationFormData from '../model/seraphApplicationFormData.js';
 
 const ClassColorCodeMap: Map<string, number> = new Map<string, number>([
     ['Death Knight', 12853051],
@@ -37,7 +37,7 @@ export default class DiscordService {
     constructor(logger: Logger) {
         this.logger = logger;
 
-        let clientData: WebhookClientData = {
+        const clientData: WebhookClientData = {
             id: env.clientId,
             token: env.clientToken
         } as WebhookClientData;
@@ -47,7 +47,7 @@ export default class DiscordService {
 
     public async SendApplicationNotification(formData: SeraphApplicationFormData): Promise<boolean> {
         this.logger('POSTing form data to discord channel');
-        let requestOptions: WebhookMessageOptions = DiscordService.GetRequestOptions(formData);
+        const requestOptions: WebhookMessageOptions = DiscordService.GetRequestOptions(formData);
 
         try {
             await this.webhookClient.send(requestOptions);
@@ -61,8 +61,8 @@ export default class DiscordService {
     }
 
     private static GetRequestOptions(formData: SeraphApplicationFormData): WebhookMessageOptions {
-        let messageContent: string = DiscordService.GetMessageContent(formData.TeamsApplyingFor, formData.TeamPreference);
-        let messageEmbeds: MessageEmbed[] = [DiscordService.GetMessageEmbeds(formData)];
+        const messageContent: string = DiscordService.GetMessageContent(formData.TeamsApplyingFor, formData.TeamPreference);
+        const messageEmbeds: MessageEmbed[] = [DiscordService.GetMessageEmbeds(formData)];
 
         return {
             content: messageContent,
