@@ -3,13 +3,13 @@
   "version": "1.0.0",
   "description": "provides the serverless code requisite to handle new seraph guild member applications",
   "license": "MIT",
-  "type": "module",
   "repository": {
     "type": "git",
     "url": "https://github.com/MikeCook9994/SeraphApplicationAutomation"
   },
   "scripts": {
     "build": "tsc",
+    "watch": "tsc --watch",
     "prestart": "npm run build",
     "start": "func start --typescript",
     "clean": "rimraf dist"
