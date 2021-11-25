@@ -38,6 +38,7 @@ jobs:
           npm install
           npm run build:prod
           npm pack
+          npm run zip
 
       # - name: 'Push Configuration Settings'
       #   uses: 'azure/appservice-settings@v1'
