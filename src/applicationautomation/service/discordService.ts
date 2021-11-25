@@ -1,32 +1,33 @@
 import { Logger } from '@azure/functions';
 import { EmbedField, MessageEmbed, WebhookClient, WebhookClientData, WebhookMessageOptions } from 'discord.js';
 import { env } from 'process';
+import { StringKeyMap } from '../model/common/types.js';
 
 import SeraphApplicationFormData from '../model/seraphApplicationFormData.js';
 
-const ClassColorCodeMap: Map<string, number> = new Map<string, number>([
-    ['Death Knight', 12853051],
-    ['Demon Hunter', 10694857],
-    ['Druid', 16743690],
-    ['Hunter', 11129457],
-    ['Mage', 4245483],
-    ['Monk', 65430],
-    ['Paladin', 16092346],
-    ['Priest', 16777215],
-    ['Rogue', 16774505],
-    ['Shaman', 28894],
-    ['Warlock', 8882157],
-    ['Warrior', 13081710]
-]);
+const ClassColorCodeMap: StringKeyMap<number> = {
+    'Death Knight': 12853051,
+    'Demon Hunter': 10694857,
+    'Druid': 16743690,
+    'Hunter': 11129457,
+    'Mage': 4245483,
+    'Monk': 65430,
+    'Paladin': 16092346,
+    'Priest': 16777215,
+    'Rogue': 16774505,
+    'Shaman': 28894,
+    'Warlock': 8882157,
+    'Warrior': 13081710
+};
 
-const TeamRoleIds: Map<string, string> = new Map<string, string>([
-    ['1. Color Blind', '352083357376708608'],
-    ['2. Casually Dysfunctional', '352083485420290058'],
-    ['3. Last Pull', '438160508714221578'],
-    ['4. Misfits', '579784598263693313'],
-    ['5. Loud Noises!', '595341062000738364'],
-    ['6. Barely Heroic', '648692259927359503']
-]);
+const TeamRoleIds: StringKeyMap<string> = {
+    '1. Color Blind': '352083357376708608',
+    '2. Casually Dysfunctional': '352083485420290058',
+    '3. Last Pull': '438160508714221578',
+    '4. Misfits': '579784598263693313',
+    '5. Loud Noises!': '595341062000738364',
+    '6. Barely Heroic': '648692259927359503'
+};
 
 const AdminRoleId: string = '328651719158267905';
 
@@ -79,7 +80,7 @@ export default class DiscordService {
                 return `${appedTeamString ? `${appedTeamString} and ` : ''}${currentAppedTeam} (<@&${AdminRoleId}>)`;
             }
 
-            return `${appedTeamString} <@&${TeamRoleIds.get(currentAppedTeam)}>`
+            return `${appedTeamString} <@&${TeamRoleIds[currentAppedTeam]}>`
         }, '');
 
         const prefenceSnippet = `Team Preference: ${(teamPreference ? teamPreference : 'No preference given')}`;
@@ -89,7 +90,7 @@ export default class DiscordService {
 
     private static GetMessageEmbeds(formData: SeraphApplicationFormData) {
         return {
-            color: ClassColorCodeMap.get(formData.Class),
+            color: ClassColorCodeMap[formData.Class],
             fields: [
                 DiscordService.GetEmbedField('Battle.Net', formData.BattleTag, true),
                 DiscordService.GetEmbedField('Discord Tag', formData.DiscordTag, true),

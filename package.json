@@ -1,6 +1,6 @@
 {
   "name": "seraph-application-automation",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "provides the serverless code requisite to handle new seraph guild member applications",
   "license": "MIT",
   "type": "module",
@@ -9,17 +9,29 @@
     "url": "https://github.com/MikeCook9994/SeraphApplicationAutomation"
   },
   "scripts": {
-    "build": "tsc",
-    "watch": "tsc --watch",
+    "prebuild": "npm run clean",
+    "build": "tsc --project tsconfig.dev.json",
+    "prebuild:prod": "npm run prebuild",
+    "build:prod": "tsc --project tsconfig.prod.json",
+    "postpack": "",
+    "build:watch": "tsc --watch --project tsconfig.dev.json",
     "prestart": "npm run build",
     "start": "func start --typescript",
     "clean": "rimraf dist",
     "lint": "eslint"
   },
+  "files": [
+    "dist/applicationautomation",
+    "host.json"
+  ],
+  "bundledDependencies": [
+    "@azure/functions",
+    "@discordjs/rest",
+    "discord.js"
+  ],
   "dependencies": {
     "@azure/functions": "^1.2.3",
     "@discordjs/rest": "^0.1.0-canary.0",
-    "discord-api-types": "^0.24.0",
     "discord.js": "^13.3.1"
   },
   "devDependencies": {
@@ -27,6 +39,7 @@
     "@typescript-eslint/eslint-plugin": "^5.4.0",
     "@typescript-eslint/parser": "^5.4.0",
     "azure-functions-core-tools": "^4.0.3971",
+    "discord-api-types": "^0.24.0",
     "eslint": "^8.3.0",
     "rimraf": "^3.0.2",
     "typescript": "^4.6.0-dev.20211124"

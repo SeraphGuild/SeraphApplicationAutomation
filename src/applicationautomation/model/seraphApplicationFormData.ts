@@ -1,5 +1,7 @@
+import { OptionalCollection, StringKeyMap } from "./common/types.js";
+
 export default class SeraphApplicationFormData {
-    constructor(formData: StringKeyMap<string | string[]>) {
+    constructor(formData: StringKeyMap<OptionalCollection<string>>) {
         this.BattleTag = formData['Battle Tag:'] as string;
         this.DiscordTag = formData['Discord Tag:'] as string;
         this.CharacterNameAndServer = formData['Character Name & Server:'] as string;
