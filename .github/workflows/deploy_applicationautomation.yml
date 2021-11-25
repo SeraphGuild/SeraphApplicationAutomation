@@ -33,7 +33,7 @@ jobs:
           creds: '${{ secrets.AZURE_CREDENTIALS }}'
 
       - name: 'Resolve Project Dependencies Using Npm'
-        shell: bash
+        shell: 'bash'
         run: |
           npm install
           npm pack
