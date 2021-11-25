@@ -12,7 +12,7 @@ on:
 env:
   NODE_VERSION: '16.x'
   AZURE_FUNCTIONAPP_NAME: 'func-applicationautomation-centralus-001'
-  AZURE_FUNCTIONAPP_PACKAGE_PATH: './dist/applicationautomation'
+  AZURE_FUNCTIONAPP_PACKAGE_PATH: 'package.zip'
 
 jobs:
   build-and-deploy:
