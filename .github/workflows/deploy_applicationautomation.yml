@@ -27,11 +27,6 @@ jobs:
         with:
           node-version: '${{ env.NODE_VERSION }}'
 
-      - name: 'Install Zip Package'
-        shell: bash
-        run: |
-          sudo apt-get -y install zip
-
       - name: 'Authenticate with Azure'
         uses: 'azure/login@v1'
         with: 
@@ -41,9 +36,7 @@ jobs:
         shell: bash
         run: |
           npm install
-          npm run build:prod
           npm pack
-          npm run zip
 
       # - name: 'Push Configuration Settings'
       #   uses: 'azure/appservice-settings@v1'
