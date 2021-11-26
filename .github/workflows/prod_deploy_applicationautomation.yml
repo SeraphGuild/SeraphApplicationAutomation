@@ -32,7 +32,6 @@ jobs:
       - name: 'Resolve Project Dependencies Using Npm'
         shell: 'bash'
         run: |
-          npm install -g azure-functions-core-tools@4 --unsafe-perm true
           npm install
 
       - name: 'Build Package'
