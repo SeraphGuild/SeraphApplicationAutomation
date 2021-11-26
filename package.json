@@ -11,13 +11,10 @@
   "scripts": {
     "prebuild": "npm run clean",
     "build": "tsc --project tsconfig.dev.json",
-
     "prebuild:prod": "npm run prebuild",
     "build:prod": "tsc --project tsconfig.prod.json",
-    
     "prepack": "npm run build:prod",
-    "zip": "archive.sh",
-    
+    "zip": "./archive.sh",
     "build:watch": "tsc --watch --project tsconfig.dev.json",
     "prestart": "npm run build",
     "start": "func start --typescript",

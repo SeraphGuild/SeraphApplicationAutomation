@@ -91,4 +91,5 @@ out
 bin
 obj
 *.settings.json
+package
 package.zip
