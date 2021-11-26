@@ -11,14 +11,16 @@
   "scripts": {
     "prebuild": "npm run clean",
     "build": "tsc --project tsconfig.dev.json",
+    "postbuild": "cp -r ./dist/* . && rm -r dist",
     "prebuild:prod": "npm run prebuild",
     "build:prod": "tsc --project tsconfig.prod.json",
-    "prepack": "npm run build:prod; cp -r ./dist/* . && rm -r dist",
-    "zip": "tarball=$(npm list --depth 0 | sed 's/@/-/g; s/ .*/.tgz/g; 1q;'); tar -tf $tarball | sed 's/^package\\///' | zip -@r package; rm $tarball; rm -rf applicationautomation",
+    "postbuild:prod": "cp -r ./dist/* . && rm -r dist",
+    "prepack": "npm run build:prod",
+    "zip": "tarball=$(npm list --depth 0 | sed 's/@/-/g; s/ .*/.tgz/g; 1q;'); tar -tf $tarball | sed 's/^package\\///' | zip -@r package; rm $tarball",
     "build:watch": "tsc --watch --project tsconfig.dev.json",
     "prestart": "npm run build",
     "start": "func start --typescript",
-    "clean": "rimraf dist",
+    "clean": "rm -rf dist applicationautomation",
     "lint": "eslint"
   },
   "files": [
@@ -39,10 +41,8 @@
     "@types/node": "^16.11.6",
     "@typescript-eslint/eslint-plugin": "^5.4.0",
     "@typescript-eslint/parser": "^5.4.0",
-    "azure-functions-core-tools": "^4.0.3971",
     "discord-api-types": "^0.24.0",
     "eslint": "^8.3.0",
-    "rimraf": "^3.0.2",
     "typescript": "^4.6.0-dev.20211124"
   }
 }

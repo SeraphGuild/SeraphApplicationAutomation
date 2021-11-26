@@ -9,8 +9,16 @@
 				"isDefault": true
 			},
 			"problemMatcher": [],
-			"label": "npm: build",
+			"label": "npm:build",
 			"detail": "tsc"
+		},
+		{
+			"type": "func",
+			"command": "host start",
+			"problemMatcher": "$func-watch",
+			"label": "func:host start",
+			"isBackground": true,
+			"dependsOn": "npm:build"
 		}
 	]
 }

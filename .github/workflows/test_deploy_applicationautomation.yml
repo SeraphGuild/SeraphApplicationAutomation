@@ -1,0 +1,59 @@
+# Docs for the Azure Web Apps Deploy action: https://github.com/azure/functions-action
+# More GitHub Actions for Azure: https://github.com/Azure/actions
+
+name: deploy and update config -- func-applicationautomation-centralus-001
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - 'master'
+
+env:
+  NODE_VERSION: '16.x'
+  AZURE_FUNCTIONAPP_NAME: 'func-applicationautomation-centralus-001'
+  AZURE_FUNCTIONAPP_PACKAGE_PATH: 'package.zip'
+
+jobs:
+  build-and-deploy:
+    runs-on: 'ubuntu-latest'
+    environment: 'test'
+    steps:
+      - name: 'Checkout Repository'
+        uses: 'actions/checkout@v2'
+
+      - name: 'Setup Node ${{ env.NODE_VERSION }} Environment'
+        uses: 'actions/setup-node@v1'
+        with:
+          node-version: '${{ env.NODE_VERSION }}'
+
+      - name: 'Authenticate with Azure'
+        uses: 'azure/login@v1'
+        with: 
+          creds: '${{ secrets.AZURE_CREDENTIALS }}'
+
+      - name: 'Resolve Project Dependencies Using Npm'
+        shell: 'bash'
+        run: |
+          npm install
+
+      - name: 'Build Package'
+        shell: 'bash'
+        run: |
+          npm pack
+          npm run zip
+
+      - name: 'Push Configuration Settings'
+        uses: 'azure/appservice-settings@v1'
+        with:
+          app-name: '${{ env.AZURE_FUNCTIONAPP_NAME }}'
+          slot-name: 'test'
+          app-settings-json: '${{ secrets.APP_SETTINGS }}'
+          general-settings-json: '{"alwaysOn": "false", "webSocketsEnabled": "true"}'
+
+      - name: 'Run Azure Functions Action'
+        uses: 'azure/functions-action@v1'
+        with:
+          app-name: '${{ env.AZURE_FUNCTIONAPP_NAME }}'
+          slot-name: 'test'
+          package: '${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}'

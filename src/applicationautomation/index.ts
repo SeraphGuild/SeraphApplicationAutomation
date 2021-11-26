@@ -1,5 +1,5 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import * as functionConfig from './function.json';
+import functionConfig from './function.json';
 
 import { AzureFunction, Context, HttpRequest } from '@azure/functions'
 
