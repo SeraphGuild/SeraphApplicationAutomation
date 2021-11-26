@@ -13,12 +13,12 @@
 			"detail": "tsc"
 		},
 		{
-			"type": "func",
-			"command": "host start",
+			"type": "npm",
+			"script": "start",
 			"problemMatcher": "$func-watch",
-			"label": "func:host start",
+			"label": "npm:start",
 			"isBackground": true,
-			"dependsOn": "npm:build"
+			"dependsOn": "npm:build",
 		}
 	]
 }
