@@ -38,7 +38,7 @@ jobs:
         shell: 'bash'
         run: |
           npm pack
-          sudo npm run zip
+          npm run zip
 
       - name: 'Push Configuration Settings'
         uses: 'azure/appservice-settings@v1'
