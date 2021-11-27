@@ -17,8 +17,8 @@
     "zip": "./archive.sh",
     "build:watch": "tsc --watch --project tsconfig.dev.json",
     "prestart": "npm run build",
-    "start": "func start --typescript",
-    "clean": "rm -rf dist applicationautomation",
+    "start": "func start --typescript dist",
+    "clean": "rm -rf dist package package.zip seraph-application-automation-2.0.0.tgz",
     "lint": "eslint"
   },
   "files": [
