@@ -5,7 +5,9 @@
             "name": "Attach to Node Function",
             "type": "node",
             "request": "attach",
-            "port": 9229,
+            "address": "localhost",
+            "port": 5858,
+            "sourceMaps": true,
             "preLaunchTask": "npm:start"
         }
     ]

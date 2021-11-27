@@ -1,5 +1,16 @@
 import { Logger } from '@azure/functions';
-import { EmbedField, MessageEmbed, WebhookClient, WebhookClientData, WebhookMessageOptions } from 'discord.js';
+import { 
+    Client, 
+    Constants, 
+    ClientOptions, 
+    EmbedField, 
+    MessageEmbed, 
+    FetchGuildOptions,
+    TextChannel,
+    ThreadCreateOptions,
+    MessageResolvable,
+    Intents,
+} from 'discord.js';
 import { env } from 'process';
 import { StringKeyMap } from '../model/common/types.js';
 
@@ -33,25 +44,34 @@ const AdminRoleId: string = '328651719158267905';
 
 export default class DiscordService {
     private logger: Logger;
-    private webhookClient: WebhookClient;
+    private client: Client;
+
+    private fetchGuildOptions: FetchGuildOptions
 
     constructor(logger: Logger) {
         this.logger = logger;
 
-        const clientData: WebhookClientData = {
-            id: env.clientId,
-            token: env.clientToken
-        } as WebhookClientData;
+        const clientOptions: ClientOptions = {
+            intents: [
+                Intents.FLAGS.GUILDS, 
+                Intents.FLAGS.GUILD_MESSAGES
+            ]
+        } as ClientOptions;
+        this.client = new Client(clientOptions);
 
-        this.webhookClient = new WebhookClient(clientData);
+        this.fetchGuildOptions = {
+            guild: {
+                id: env.guildId as string
+            }
+        } as FetchGuildOptions;
     }
 
     public async SendApplicationNotification(formData: SeraphApplicationFormData): Promise<boolean> {
         this.logger('POSTing form data to discord channel');
-        const requestOptions: WebhookMessageOptions = DiscordService.GetRequestOptions(formData);
+        const message: MessageResolvable = DiscordService.GetMessage(formData);
 
         try {
-            await this.webhookClient.send(requestOptions);
+            await this.CreateThread(message);
         } catch (ex) {
             this.logger(`An exception occured while sending the request: ${ex}`);
             return false;
@@ -61,17 +81,26 @@ export default class DiscordService {
         return true;
     }
 
-    private static GetRequestOptions(formData: SeraphApplicationFormData): WebhookMessageOptions {
+    private async CreateThread(startMessage: MessageResolvable): Promise<void> {
+        const threadCreateOptions: ThreadCreateOptions<'GUILD_PUBLIC_THREAD'> = {
+            startMessage: startMessage
+        } as ThreadCreateOptions<'GUILD_PUBLIC_THREAD'>;
+
+        await this.client.login(env.botToken as string);
+        const guild = await this.client.guilds.fetch(this.fetchGuildOptions);
+        const threadManager = ((await guild.channels.fetch(env.applicationChannelId as string)) as TextChannel).threads;
+        await threadManager.create(threadCreateOptions);
+    }
+
+    private static GetMessage(formData: SeraphApplicationFormData): MessageResolvable {
         const messageContent: string = DiscordService.GetMessageContent(formData.TeamsApplyingFor, formData.TeamPreference);
         const messageEmbeds: MessageEmbed[] = [DiscordService.GetMessageEmbeds(formData)];
 
         return {
             content: messageContent,
-            username: 'Seraph Application Automation',
-            avatarURL: 'https://cdn.discordapp.com/icons/328648081597792268/cb0dfe6bdef6ee1a280a70f9fb4688ae.png?size=128',
             tts: false,
             embeds: messageEmbeds
-        } as WebhookMessageOptions;
+        } as MessageResolvable;
     }
 
     private static GetMessageContent(appedTeams: string[], teamPreference: string): string {
