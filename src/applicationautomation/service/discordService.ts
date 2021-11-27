@@ -1,15 +1,20 @@
 import { Logger } from '@azure/functions';
+import { ThreadAutoArchiveDuration } from 'discord-api-types';
 import { 
     Client, 
-    Constants, 
     ClientOptions, 
     EmbedField, 
     MessageEmbed, 
     FetchGuildOptions,
     TextChannel,
     ThreadCreateOptions,
-    MessageResolvable,
     Intents,
+    ThreadManager,
+    Guild,
+    Snowflake,
+    MessageOptions,
+    AllowedThreadTypeForTextChannel,
+    ThreadChannel,
 } from 'discord.js';
 import { env } from 'process';
 import { StringKeyMap } from '../model/common/types.js';
@@ -60,18 +65,16 @@ export default class DiscordService {
         this.client = new Client(clientOptions);
 
         this.fetchGuildOptions = {
-            guild: {
-                id: env.guildId as string
-            }
+            guild: env.guildId as Snowflake
         } as FetchGuildOptions;
     }
 
     public async SendApplicationNotification(formData: SeraphApplicationFormData): Promise<boolean> {
         this.logger('POSTing form data to discord channel');
-        const message: MessageResolvable = DiscordService.GetMessage(formData);
+        const message: MessageOptions = DiscordService.GetMessage(formData);
 
         try {
-            await this.CreateThread(message);
+            await this.CreateThread(formData.CharacterNameAndServer, message);
         } catch (ex) {
             this.logger(`An exception occured while sending the request: ${ex}`);
             return false;
@@ -81,26 +84,27 @@ export default class DiscordService {
         return true;
     }
 
-    private async CreateThread(startMessage: MessageResolvable): Promise<void> {
-        const threadCreateOptions: ThreadCreateOptions<'GUILD_PUBLIC_THREAD'> = {
-            startMessage: startMessage
-        } as ThreadCreateOptions<'GUILD_PUBLIC_THREAD'>;
+    private async CreateThread(threadTitle: string, messageOptions: MessageOptions): Promise<void> {
+        const threadCreateOptions: ThreadCreateOptions<AllowedThreadTypeForTextChannel> = {
+            name: threadTitle
+        } as ThreadCreateOptions<AllowedThreadTypeForTextChannel>;
 
         await this.client.login(env.botToken as string);
-        const guild = await this.client.guilds.fetch(this.fetchGuildOptions);
-        const threadManager = ((await guild.channels.fetch(env.applicationChannelId as string)) as TextChannel).threads;
-        await threadManager.create(threadCreateOptions);
+        const guild: Guild = await this.client.guilds.fetch(this.fetchGuildOptions);
+        const threadManager: ThreadManager<AllowedThreadTypeForTextChannel> = ((await guild.channels.fetch(env.applicationChannelId as string)) as TextChannel).threads
+        const threadChannel: ThreadChannel = await threadManager.create(threadCreateOptions);
+        await threadChannel.send(messageOptions);
     }
 
-    private static GetMessage(formData: SeraphApplicationFormData): MessageResolvable {
+    private static GetMessage(formData: SeraphApplicationFormData): MessageOptions {
         const messageContent: string = DiscordService.GetMessageContent(formData.TeamsApplyingFor, formData.TeamPreference);
         const messageEmbeds: MessageEmbed[] = [DiscordService.GetMessageEmbeds(formData)];
 
         return {
             content: messageContent,
             tts: false,
-            embeds: messageEmbeds
-        } as MessageResolvable;
+            embeds: messageEmbeds,
+        } as MessageOptions;
     }
 
     private static GetMessageContent(appedTeams: string[], teamPreference: string): string {
