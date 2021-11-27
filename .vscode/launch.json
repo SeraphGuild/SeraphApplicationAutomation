@@ -8,7 +8,8 @@
             "address": "localhost",
             "port": 5858,
             "sourceMaps": true,
-            "preLaunchTask": "npm:start"
+            "preLaunchTask": "npm:start",
+            "cwd": "${workspaceFolder}/dist"
         }
     ]
 }

@@ -17,13 +17,10 @@
     "zip": "./archive.sh",
     "build:watch": "tsc --watch --project tsconfig.dev.json",
     "prestart": "npm run build",
-    "start": "func start --typescript",
+    "start": "func start --typescript --script-root dist",
     "clean": "rm -rf dist package package.zip seraph-application-automation-2.0.0.tgz",
     "lint": "eslint"
   },
-  "files": [
-    "host.json"
-  ],
   "bundledDependencies": [
     "@azure/functions",
     "@discordjs/rest",
