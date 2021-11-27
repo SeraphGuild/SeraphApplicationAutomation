@@ -21,6 +21,7 @@
     "clean": "rm -rf dist package package.zip seraph-application-automation-2.0.0.tgz",
     "lint": "eslint"
   },
+  "files": [],
   "bundledDependencies": [
     "@azure/functions",
     "@discordjs/rest",
