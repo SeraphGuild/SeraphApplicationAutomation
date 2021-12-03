@@ -1,7 +1,7 @@
 # Docs for the Azure Web Apps Deploy action: https://github.com/azure/functions-action
 # More GitHub Actions for Azure: https://github.com/Azure/actions
 
-name: deploy and update config -- func-applicationautomation-centralus-001
+name: 'Application Automation Production'
 
 on:
   workflow_dispatch:
