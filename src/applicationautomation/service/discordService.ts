@@ -1,5 +1,4 @@
 import { Logger } from '@azure/functions';
-import { ThreadAutoArchiveDuration } from 'discord-api-types';
 import { 
     Client, 
     ClientOptions, 
