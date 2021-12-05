@@ -5,9 +5,6 @@ name: 'Application Automation Prod'
 
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - 'master'
 
 env:
   NODE_VERSION: '16.x'
