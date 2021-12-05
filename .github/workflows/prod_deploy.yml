@@ -1,20 +1,23 @@
 # Docs for the Azure Web Apps Deploy action: https://github.com/azure/functions-action
 # More GitHub Actions for Azure: https://github.com/Azure/actions
 
-name: 'Application Automation Production'
+name: 'Application Automation Prod'
 
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - 'master'
 
 env:
   NODE_VERSION: '16.x'
-  AZURE_FUNCTIONAPP_NAME: 'func-applicationautomation-centralus-001'
+  AZURE_FUNCTIONAPP_NAME: 'dscrd-appauto-usce-func-seraph'
   AZURE_FUNCTIONAPP_PACKAGE_PATH: 'package.zip'
 
 jobs:
   build-and-deploy:
     runs-on: 'ubuntu-latest'
-    environment: 'test'
+    environment: 'prod'
     steps:
       - name: 'Checkout Repository'
         uses: 'actions/checkout@v2'
@@ -47,7 +50,7 @@ jobs:
           app-settings-json: '${{ secrets.APP_SETTINGS }}'
           general-settings-json: '{"alwaysOn": "false", "webSocketsEnabled": "true"}'
 
-      - name: 'Run Azure Functions Action'
+      - name: 'Deploy Function'
         uses: 'azure/functions-action@v1'
         with:
           app-name: '${{ env.AZURE_FUNCTIONAPP_NAME }}'
