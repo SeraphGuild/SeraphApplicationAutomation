@@ -88,8 +88,6 @@ dist
 out
 
 # Azure Functions artifacts
-bin
-obj
-*.settings.json
+**/*.settings.json
 package
 package.zip
