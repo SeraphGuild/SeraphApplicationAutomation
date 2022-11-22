@@ -36,12 +36,10 @@ const ClassColorCodeMap: StringKeyMap<number> = {
 };
 
 const TeamRoleIds: StringKeyMap<string> = {
-    '1. Color Blind': '352083357376708608',
+    '1. Barely Heroic': '648692259927359503',
     '2. Casually Dysfunctional': '352083485420290058',
     '3. Last Pull': '438160508714221578',
-    '4. Misfits': '579784598263693313',
-    '5. Loud Noises!': '595341062000738364',
-    '6. Barely Heroic': '648692259927359503'
+    '4. Misfits': '579784598263693313'
 };
 
 const AdminRoleId: string = '328651719158267905';
@@ -108,7 +106,7 @@ export default class DiscordService {
 
     private static GetMessageContent(appedTeams: string[], teamPreference: string): string {
         const appedTeamTags = appedTeams.reduce((appedTeamString: string, currentAppedTeam: string) => {
-            if (currentAppedTeam === 'General Membership') {
+            if (currentAppedTeam.indexOf('General Membership') !== -1) {
                 return `${appedTeamString ? `${appedTeamString} and ` : ''}${currentAppedTeam} (<@&${AdminRoleId}>)`;
             }
 
