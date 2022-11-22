@@ -32,7 +32,8 @@ const ClassColorCodeMap: StringKeyMap<number> = {
     'Rogue': 16774505,
     'Shaman': 28894,
     'Warlock': 8882157,
-    'Warrior': 13081710
+    'Warrior': 13081710,
+    'Evoker': 3380095
 };
 
 const TeamRoleIds: StringKeyMap<string> = {
