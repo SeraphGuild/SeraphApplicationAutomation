@@ -71,17 +71,17 @@ export default class DiscordService {
     }
 
     public async SendApplicationNotification(formData: SeraphApplicationFormData): Promise<boolean> {
-        this.logger('POSTing form data to discord channel');
+        this.logger.info('POSTing form data to discord channel');
         const message: MessageCreateOptions = DiscordService.GetMessage(formData);
 
         try {
             await this.CreateThread(formData.CharacterNameAndServer, message);
         } catch (ex) {
-            this.logger(`An exception occured while sending the request: ${ex}`);
+            this.logger.error(`An exception occured while sending the request: ${ex}`);
             return false;
         }
 
-        this.logger('Successfully posted form data to discord channel');
+        this.logger.info('Successfully posted form data to discord channel');
         return true;
     }
 
@@ -92,10 +92,21 @@ export default class DiscordService {
             message: messageOptions
         } as GuildForumThreadCreateOptions;
 
-        await this.client.login(env.botToken as string);
-        const guild: Guild = await this.client.guilds.fetch(this.fetchGuildOptions);
-        const forumManager: GuildForumThreadManager = ((await guild.channels.fetch(env.applicationChannelId as string)) as ForumChannel).threads;
-        await forumManager.create(forumThreadCreateOptions);
+
+        try {
+            await this.client.login(env.botToken as string);
+        } catch(ex) {
+            this.logger.error(`While signing bot client into discord: ${ex}`);
+        }
+
+        try {
+            const guild: Guild = await this.client.guilds.fetch(this.fetchGuildOptions);
+            const forumManager: GuildForumThreadManager = ((await guild.channels.fetch(env.applicationChannelId as string)) as ForumChannel).threads;
+            await forumManager.create(forumThreadCreateOptions);
+        } catch(ex) {
+            this.logger.error(`While creating forum thread: ${ex}`);
+        }
+
     }
 
     private static GetMessage(formData: SeraphApplicationFormData): GuildForumThreadMessageCreateOptions {
