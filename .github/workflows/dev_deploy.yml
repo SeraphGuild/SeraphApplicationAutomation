@@ -10,7 +10,7 @@ on:
       - 'master'
 
 env:
-  NODE_VERSION: '16.x'
+  NODE_VERSION: '18.x'
   AZURE_FUNCTIONAPP_NAME: 'dscrd-appauto-usce-func-dev'
   AZURE_FUNCTIONAPP_PACKAGE_PATH: 'package.zip'
 
