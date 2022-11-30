@@ -4,7 +4,6 @@ import {
     ClientOptions, 
     EmbedField,
     FetchGuildOptions,
-    TextChannel,
     Guild,
     Snowflake,
     AllowedThreadTypeForTextChannel,
@@ -15,6 +14,10 @@ import {
     APIEmbed,
     StartThreadOptions,
     ThreadAutoArchiveDuration,
+    ForumChannel,
+    GuildForumThreadManager,
+    GuildForumThreadCreateOptions,
+    GuildForumThreadMessageCreateOptions,
 } from 'discord.js';
 import { env } from 'process';
 
@@ -82,32 +85,27 @@ export default class DiscordService {
         return true;
     }
 
-    private async CreateThread(threadTitle: string, messageOptions: MessageCreateOptions): Promise<void> {
-        const threadCreateOptions: StartThreadOptions = {
+    private async CreateThread(threadTitle: string, messageOptions: GuildForumThreadMessageCreateOptions): Promise<void> {
+        const forumThreadCreateOptions: GuildForumThreadCreateOptions = {
             autoArchiveDuration: ThreadAutoArchiveDuration.OneWeek,
-            name: threadTitle
-        } as StartThreadOptions;
+            name: threadTitle,
+            message: messageOptions
+        } as GuildForumThreadCreateOptions;
 
         await this.client.login(env.botToken as string);
         const guild: Guild = await this.client.guilds.fetch(this.fetchGuildOptions);
-        const threadManager: GuildTextThreadManager<AllowedThreadTypeForTextChannel> = ((await guild.channels.fetch(env.applicationChannelId as string)) as TextChannel).threads;
-        const threadChannel: ThreadChannel = await threadManager.create(threadCreateOptions);
-
-        if (!threadChannel.joined) {
-            await threadChannel.join();
-        }
-
-        await threadChannel.send(messageOptions);
+        const forumManager: GuildForumThreadManager = ((await guild.channels.fetch(env.applicationChannelId as string)) as ForumChannel).threads;
+        await forumManager.create(forumThreadCreateOptions);
     }
 
-    private static GetMessage(formData: SeraphApplicationFormData): MessageCreateOptions {
+    private static GetMessage(formData: SeraphApplicationFormData): GuildForumThreadMessageCreateOptions {
         const messageContent: string = DiscordService.GetMessageContent(formData.TeamsApplyingFor, formData.TeamPreference);
         const messageEmbeds: APIEmbed[] = [DiscordService.GetMessageEmbeds(formData)];
 
         return {
             content: messageContent,
             embeds: messageEmbeds,
-        } as MessageCreateOptions;
+        } as GuildForumThreadMessageCreateOptions;
     }
 
     private static GetMessageContent(appedTeams: string[], teamPreference: string): string {
@@ -137,7 +135,7 @@ export default class DiscordService {
                 DiscordService.GetEmbedField('Recent Combat Logs', formData.RecentCombatLogs),
                 DiscordService.GetEmbedField('WoW Armory', `[Armory Link](${formData.ArmoryLink})`, true),
                 DiscordService.GetEmbedField('Specific Raiding & Guild History', formData.RaidingHistory),
-                DiscordService.GetEmbedField('Applicant Note', formData.ApplicantNote),
+                DiscordService.GetEmbedField('Applicant Note', formData.ApplicantNote || '*none provided*'),
                 DiscordService.GetEmbedField('Where did you hear about Seraph?', formData.LearnAboutSeraph.reduce((prev: string, curr: string) => `${prev}\n  * ${curr}`)),
             ],
             footer: {
