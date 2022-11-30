@@ -2,22 +2,23 @@ import { Logger } from '@azure/functions';
 import { 
     Client, 
     ClientOptions, 
-    EmbedField, 
-    MessageEmbed, 
+    EmbedField,
     FetchGuildOptions,
     TextChannel,
-    ThreadCreateOptions,
-    Intents,
-    ThreadManager,
     Guild,
     Snowflake,
-    MessageOptions,
     AllowedThreadTypeForTextChannel,
     ThreadChannel,
+    GuildTextThreadManager,
+    IntentsBitField,
+    MessageCreateOptions,
+    APIEmbed,
+    StartThreadOptions,
+    ThreadAutoArchiveDuration,
 } from 'discord.js';
 import { env } from 'process';
-import { StringKeyMap } from '../model/common/types.js';
 
+import { StringKeyMap } from '../model/common/types.js';
 import SeraphApplicationFormData from '../model/seraphApplicationFormData.js';
 
 const ClassColorCodeMap: StringKeyMap<number> = {
@@ -39,8 +40,7 @@ const ClassColorCodeMap: StringKeyMap<number> = {
 const TeamRoleIds: StringKeyMap<string> = {
     '1. Barely Heroic': '648692259927359503',
     '2. Casually Dysfunctional': '352083485420290058',
-    '3. Last Pull': '438160508714221578',
-    '4. Misfits': '579784598263693313'
+    '3. Misfits': '579784598263693313'
 };
 
 const AdminRoleId: string = '328651719158267905';
@@ -56,8 +56,8 @@ export default class DiscordService {
 
         const clientOptions: ClientOptions = {
             intents: [
-                Intents.FLAGS.GUILDS, 
-                Intents.FLAGS.GUILD_MESSAGES
+                IntentsBitField.Flags.Guilds, 
+                IntentsBitField.Flags.GuildMessages
             ]
         } as ClientOptions;
         this.client = new Client(clientOptions);
@@ -69,7 +69,7 @@ export default class DiscordService {
 
     public async SendApplicationNotification(formData: SeraphApplicationFormData): Promise<boolean> {
         this.logger('POSTing form data to discord channel');
-        const message: MessageOptions = DiscordService.GetMessage(formData);
+        const message: MessageCreateOptions = DiscordService.GetMessage(formData);
 
         try {
             await this.CreateThread(formData.CharacterNameAndServer, message);
@@ -82,27 +82,27 @@ export default class DiscordService {
         return true;
     }
 
-    private async CreateThread(threadTitle: string, messageOptions: MessageOptions): Promise<void> {
-        const threadCreateOptions: ThreadCreateOptions<AllowedThreadTypeForTextChannel> = {
+    private async CreateThread(threadTitle: string, messageOptions: MessageCreateOptions): Promise<void> {
+        const threadCreateOptions: StartThreadOptions = {
+            autoArchiveDuration: ThreadAutoArchiveDuration.OneWeek,
             name: threadTitle
-        } as ThreadCreateOptions<AllowedThreadTypeForTextChannel>;
+        } as StartThreadOptions;
 
         await this.client.login(env.botToken as string);
         const guild: Guild = await this.client.guilds.fetch(this.fetchGuildOptions);
-        const threadManager: ThreadManager<AllowedThreadTypeForTextChannel> = ((await guild.channels.fetch(env.applicationChannelId as string)) as TextChannel).threads
+        const threadManager: GuildTextThreadManager<AllowedThreadTypeForTextChannel> = ((await guild.channels.fetch(env.applicationChannelId as string)) as TextChannel).threads
         const threadChannel: ThreadChannel = await threadManager.create(threadCreateOptions);
         await threadChannel.send(messageOptions);
     }
 
-    private static GetMessage(formData: SeraphApplicationFormData): MessageOptions {
+    private static GetMessage(formData: SeraphApplicationFormData): MessageCreateOptions {
         const messageContent: string = DiscordService.GetMessageContent(formData.TeamsApplyingFor, formData.TeamPreference);
-        const messageEmbeds: MessageEmbed[] = [DiscordService.GetMessageEmbeds(formData)];
+        const messageEmbeds: APIEmbed[] = [DiscordService.GetMessageEmbeds(formData)];
 
         return {
             content: messageContent,
-            tts: false,
             embeds: messageEmbeds,
-        } as MessageOptions;
+        } as MessageCreateOptions;
     }
 
     private static GetMessageContent(appedTeams: string[], teamPreference: string): string {
@@ -119,7 +119,7 @@ export default class DiscordService {
         return `A new guild application has been submitted for ${appedTeamTags}\n${prefenceSnippet}`;
     }
 
-    private static GetMessageEmbeds(formData: SeraphApplicationFormData) {
+    private static GetMessageEmbeds(formData: SeraphApplicationFormData): APIEmbed {
         return {
             color: ClassColorCodeMap[formData.Class],
             fields: [
@@ -131,22 +131,14 @@ export default class DiscordService {
                 DiscordService.GetEmbedField('Viable Off-Spec(s) or Alts', formData.OffspecsAndAlts || '*none provided*'),
                 DiscordService.GetEmbedField('Recent Combat Logs', formData.RecentCombatLogs),
                 DiscordService.GetEmbedField('WoW Armory', `[Armory Link](${formData.ArmoryLink})`, true),
-                DiscordService.GetEmbedField('Specific Raiding & Guild History', DiscordService.FormatLongFormField(formData.RaidingHistory)),
-                DiscordService.GetEmbedField('Applicant Note', DiscordService.FormatLongFormField(formData.ApplicantNote)),
+                DiscordService.GetEmbedField('Specific Raiding & Guild History', formData.RaidingHistory),
+                DiscordService.GetEmbedField('Applicant Note', formData.ApplicantNote),
                 DiscordService.GetEmbedField('Where did you hear about Seraph?', formData.LearnAboutSeraph.reduce((prev: string, curr: string) => `${prev}\n  * ${curr}`)),
             ],
             footer: {
                 text: `Posted at: ${new Date().toDateString()} ${new Date().toTimeString()}`
             }
-        } as MessageEmbed;
-    }
-
-    private static FormatLongFormField(fieldValue: string): string {
-        if (fieldValue) {
-            return fieldValue.length > 1024 ? (fieldValue.substr(0, 1021).trim() + '...') : fieldValue;
-        }
-        
-        return '*none provided*';
+        } as APIEmbed;
     }
 
     private static GetEmbedField(name: string, value: string, inline: boolean = false): EmbedField {
