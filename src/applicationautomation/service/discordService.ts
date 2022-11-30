@@ -93,11 +93,11 @@ export default class DiscordService {
         const threadManager: GuildTextThreadManager<AllowedThreadTypeForTextChannel> = ((await guild.channels.fetch(env.applicationChannelId as string)) as TextChannel).threads;
         const threadChannel: ThreadChannel = await threadManager.create(threadCreateOptions);
 
-        if (threadChannel.joinable) {
+        if (!threadChannel.joined) {
             await threadChannel.join();
-            await threadChannel.send(messageOptions);
-            await threadChannel.leave();
         }
+
+        await threadChannel.send(messageOptions);
     }
 
     private static GetMessage(formData: SeraphApplicationFormData): MessageCreateOptions {
