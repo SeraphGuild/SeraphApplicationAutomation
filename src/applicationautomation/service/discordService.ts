@@ -13,8 +13,6 @@ import {
     ForumChannel,
     GuildForumThreadCreateOptions,
     GuildForumThreadMessageCreateOptions,
-    TextChannelType,
-    GuildTextBasedChannel,
     ThreadChannel,
 } from 'discord.js';
 import { env } from 'process';
