@@ -74,7 +74,7 @@ export default class DiscordService {
         this.logger.info('POSTing form data to discord channel');
         const message: MessageCreateOptions = DiscordService.GetMessage(formData);
 
-        let result: boolean;
+        let result: boolean = false;
 
         try {
             result = await this.CreateThread(formData.CharacterNameAndServer, message);
