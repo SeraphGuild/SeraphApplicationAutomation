@@ -13,6 +13,8 @@ import {
     ForumChannel,
     GuildForumThreadCreateOptions,
     GuildForumThreadMessageCreateOptions,
+    TextChannelType,
+    GuildTextBasedChannel,
 } from 'discord.js';
 import { env } from 'process';
 
@@ -103,6 +105,14 @@ export default class DiscordService {
             const guild: Guild = await this.client.guilds.fetch(this.fetchGuildOptions);
             const forumChannel: ForumChannel = (await guild.channels.fetch(env.applicationChannelId as string)) as ForumChannel;
             await forumChannel.threads.create(forumThreadCreateOptions);
+
+            try {
+                await ((await guild.channels.fetch('497541229991690260')) as GuildTextBasedChannel).send("There's a new application <@230230049507377152>.");
+            }
+            catch (ex) {
+                this.logger.warn(`Non-fatil error. failed to tag user. ${ex}`)
+            }
+
         } catch(ex) {
             this.logger.error(`While creating forum thread: ${ex}`);
             return false;
