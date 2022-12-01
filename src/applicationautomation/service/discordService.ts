@@ -107,10 +107,10 @@ export default class DiscordService {
             await forumChannel.threads.create(forumThreadCreateOptions);
 
             try {
-                await ((await guild.channels.fetch('497541229991690260')) as GuildTextBasedChannel).send("There's a new application <@230230049507377152>.");
+                await ((await guild.channels.fetch('497541229991690260')) as GuildTextBasedChannel).send("There's a new application <@&638279713411825666>.");
             }
             catch (ex) {
-                this.logger.warn(`Non-fatil error. failed to tag user. ${ex}`)
+                this.logger.warn(`Non-fatal error. failed to tag user. ${ex}`)
             }
 
         } catch(ex) {
