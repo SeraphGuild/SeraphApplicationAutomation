@@ -6,16 +6,11 @@ import {
     FetchGuildOptions,
     Guild,
     Snowflake,
-    AllowedThreadTypeForTextChannel,
-    ThreadChannel,
-    GuildTextThreadManager,
     IntentsBitField,
     MessageCreateOptions,
     APIEmbed,
-    StartThreadOptions,
     ThreadAutoArchiveDuration,
     ForumChannel,
-    GuildForumThreadManager,
     GuildForumThreadCreateOptions,
     GuildForumThreadMessageCreateOptions,
 } from 'discord.js';
@@ -46,7 +41,7 @@ const TeamRoleIds: StringKeyMap<string> = {
     '3. Misfits': '579784598263693313'
 };
 
-const AdminRoleId: string = '328651719158267905';
+const AdminRoleId: string = '230230049507377152';
 
 export default class DiscordService {
     private logger: Logger;
@@ -82,7 +77,10 @@ export default class DiscordService {
             this.logger.error(`An exception occured while sending the request: ${ex}`);
         }
 
-        this.logger.info('Successfully posted form data to discord channel');
+        if (result) {
+            this.logger.info('Successfully posted form data to discord channel');
+        }
+
         return result;
     }
 
