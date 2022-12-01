@@ -15,6 +15,7 @@ import {
     GuildForumThreadMessageCreateOptions,
     TextChannelType,
     GuildTextBasedChannel,
+    ThreadChannel,
 } from 'discord.js';
 import { env } from 'process';
 
@@ -69,12 +70,13 @@ export default class DiscordService {
 
     public async SendApplicationNotification(formData: SeraphApplicationFormData): Promise<boolean> {
         this.logger.info('POSTing form data to discord channel');
-        const message: MessageCreateOptions = DiscordService.GetMessage(formData);
+        const embedMessage: MessageCreateOptions = DiscordService.GetEmbedMessage(formData);
+        const tagMessage: string = DiscordService.GetTagMessage(formData);
 
         let result: boolean = false;
 
         try {
-            result = await this.CreateThread(formData.CharacterNameAndServer, message);
+            result = await this.CreateThread(formData.CharacterNameAndServer, embedMessage, tagMessage);
         } catch (ex) {
             this.logger.error(`An exception occured while sending the request: ${ex}`);
         }
@@ -86,11 +88,11 @@ export default class DiscordService {
         return result;
     }
 
-    private async CreateThread(threadTitle: string, messageOptions: GuildForumThreadMessageCreateOptions): Promise<boolean> {
+    private async CreateThread(threadTitle: string, embedMessage: GuildForumThreadMessageCreateOptions, tagContent: string): Promise<boolean> {
         const forumThreadCreateOptions: GuildForumThreadCreateOptions = {
             autoArchiveDuration: ThreadAutoArchiveDuration.OneWeek,
             name: threadTitle,
-            message: messageOptions
+            message: embedMessage
         } as GuildForumThreadCreateOptions;
 
 
@@ -104,15 +106,8 @@ export default class DiscordService {
         try {
             const guild: Guild = await this.client.guilds.fetch(this.fetchGuildOptions);
             const forumChannel: ForumChannel = (await guild.channels.fetch(env.applicationChannelId as string)) as ForumChannel;
-            await forumChannel.threads.create(forumThreadCreateOptions);
-
-            try {
-                await ((await guild.channels.fetch('497541229991690260')) as GuildTextBasedChannel).send("There's a new application <@&638279713411825666>.");
-            }
-            catch (ex) {
-                this.logger.warn(`Non-fatal error. failed to tag user. ${ex}`)
-            }
-
+            const forumPostChannel: ThreadChannel = await forumChannel.threads.create(forumThreadCreateOptions);
+            await forumPostChannel.send(tagContent);
         } catch(ex) {
             this.logger.error(`While creating forum thread: ${ex}`);
             return false;
@@ -121,13 +116,31 @@ export default class DiscordService {
         return true;
     }
 
-    private static GetMessage(formData: SeraphApplicationFormData): GuildForumThreadMessageCreateOptions {
-        const messageContent: string = DiscordService.GetMessageContent(formData.TeamsApplyingFor, formData.TeamPreference);
-        const messageEmbeds: APIEmbed[] = [DiscordService.GetMessageEmbeds(formData)];
+    private static GetTagMessage(formData: SeraphApplicationFormData): string {
+        return DiscordService.GetMessageContent(formData.TeamsApplyingFor, formData.TeamPreference);
+    }
 
+    private static GetEmbedMessage(formData: SeraphApplicationFormData): GuildForumThreadMessageCreateOptions {
         return {
-            content: messageContent,
-            embeds: messageEmbeds,
+            embeds: [<APIEmbed>{
+                color: ClassColorCodeMap[formData.Class],
+                fields: [
+                    DiscordService.GetEmbedField('Battle.Net', formData.BattleTag, true),
+                    DiscordService.GetEmbedField('Discord Tag', formData.DiscordTag, true),
+                    DiscordService.GetEmbedField('Age & (Preferred) Gender', formData.AgeAndGender, true),
+                    DiscordService.GetEmbedField('Character Name, Server, and Faction', formData.CharacterNameAndServer, true),
+                    DiscordService.GetEmbedField('Main Spec', formData.MainSpec, true),
+                    DiscordService.GetEmbedField('Viable Off-Spec(s) or Alts', formData.OffspecsAndAlts || '*none provided*'),
+                    DiscordService.GetEmbedField('Recent Combat Logs', formData.RecentCombatLogs),
+                    DiscordService.GetEmbedField('WoW Armory', `[Armory Link](${formData.ArmoryLink})`, true),
+                    DiscordService.GetEmbedField('Specific Raiding & Guild History', formData.RaidingHistory),
+                    DiscordService.GetEmbedField('Applicant Note', formData.ApplicantNote || '*none provided*'),
+                    DiscordService.GetEmbedField('Where did you hear about Seraph?', formData.LearnAboutSeraph.reduce((prev: string, curr: string) => `${prev}\n  * ${curr}`)),
+                ],
+                footer: {
+                    text: `Posted at: ${new Date().toDateString()} ${new Date().toTimeString()}`
+                }
+            }],
         } as GuildForumThreadMessageCreateOptions;
     }
 
@@ -143,28 +156,6 @@ export default class DiscordService {
         const prefenceSnippet = `Team Preference: ${(teamPreference ? teamPreference : 'No preference given')}`;
 
         return `A new guild application has been submitted for ${appedTeamTags}\n${prefenceSnippet}`;
-    }
-
-    private static GetMessageEmbeds(formData: SeraphApplicationFormData): APIEmbed {
-        return {
-            color: ClassColorCodeMap[formData.Class],
-            fields: [
-                DiscordService.GetEmbedField('Battle.Net', formData.BattleTag, true),
-                DiscordService.GetEmbedField('Discord Tag', formData.DiscordTag, true),
-                DiscordService.GetEmbedField('Age & (Preferred) Gender', formData.AgeAndGender, true),
-                DiscordService.GetEmbedField('Character Name, Server, and Faction', formData.CharacterNameAndServer, true),
-                DiscordService.GetEmbedField('Main Spec', formData.MainSpec, true),
-                DiscordService.GetEmbedField('Viable Off-Spec(s) or Alts', formData.OffspecsAndAlts || '*none provided*'),
-                DiscordService.GetEmbedField('Recent Combat Logs', formData.RecentCombatLogs),
-                DiscordService.GetEmbedField('WoW Armory', `[Armory Link](${formData.ArmoryLink})`, true),
-                DiscordService.GetEmbedField('Specific Raiding & Guild History', formData.RaidingHistory),
-                DiscordService.GetEmbedField('Applicant Note', formData.ApplicantNote || '*none provided*'),
-                DiscordService.GetEmbedField('Where did you hear about Seraph?', formData.LearnAboutSeraph.reduce((prev: string, curr: string) => `${prev}\n  * ${curr}`)),
-            ],
-            footer: {
-                text: `Posted at: ${new Date().toDateString()} ${new Date().toTimeString()}`
-            }
-        } as APIEmbed;
     }
 
     private static GetEmbedField(name: string, value: string, inline: boolean = false): EmbedField {
