@@ -7,7 +7,7 @@ import DiscordService from './service/discordService.js';
 import SeraphApplicationFormData from './model/seraphApplicationFormData.js';
 import { OptionalCollection, StringKeyMap } from './model/common/types.js';
 
-const httpTrigger: AzureFunction = async function (context: Context, req: HttpRequest): Promise<StringKeyMap<unknown>> {
+const httpTrigger: AzureFunction = async function (context: Context, req: HttpRequest): Promise<void> {
     const requestBody: StringKeyMap<OptionalCollection<string>> = req.body as StringKeyMap<OptionalCollection<string>>;
     context.log.info(`application received: ${JSON.stringify(req.body)}`);
 
@@ -21,10 +21,10 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
     if (statusCode === 500) {
         throw new Error('Failed to post application to discord');
     }
-    
-    return {
+
+    context.res = {
         status: statusCode
-    };
+    }
 };
 
 export default httpTrigger;

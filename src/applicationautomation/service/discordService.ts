@@ -74,18 +74,19 @@ export default class DiscordService {
         this.logger.info('POSTing form data to discord channel');
         const message: MessageCreateOptions = DiscordService.GetMessage(formData);
 
+        let result: boolean;
+
         try {
-            await this.CreateThread(formData.CharacterNameAndServer, message);
+            result = await this.CreateThread(formData.CharacterNameAndServer, message);
         } catch (ex) {
             this.logger.error(`An exception occured while sending the request: ${ex}`);
-            return false;
         }
 
         this.logger.info('Successfully posted form data to discord channel');
-        return true;
+        return result;
     }
 
-    private async CreateThread(threadTitle: string, messageOptions: GuildForumThreadMessageCreateOptions): Promise<void> {
+    private async CreateThread(threadTitle: string, messageOptions: GuildForumThreadMessageCreateOptions): Promise<boolean> {
         const forumThreadCreateOptions: GuildForumThreadCreateOptions = {
             autoArchiveDuration: ThreadAutoArchiveDuration.OneWeek,
             name: threadTitle,
@@ -97,16 +98,19 @@ export default class DiscordService {
             await this.client.login(env.botToken as string);
         } catch(ex) {
             this.logger.error(`While signing bot client into discord: ${ex}`);
+            return false;
         }
 
         try {
             const guild: Guild = await this.client.guilds.fetch(this.fetchGuildOptions);
-            const forumManager: GuildForumThreadManager = ((await guild.channels.fetch(env.applicationChannelId as string)) as ForumChannel).threads;
-            await forumManager.create(forumThreadCreateOptions);
+            const forumChannel: ForumChannel = (await guild.channels.fetch(env.applicationChannelId as string)) as ForumChannel;
+            await forumChannel.threads.create(forumThreadCreateOptions);
         } catch(ex) {
             this.logger.error(`While creating forum thread: ${ex}`);
+            return false;
         }
 
+        return true;
     }
 
     private static GetMessage(formData: SeraphApplicationFormData): GuildForumThreadMessageCreateOptions {
@@ -140,7 +144,7 @@ export default class DiscordService {
                 DiscordService.GetEmbedField('Battle.Net', formData.BattleTag, true),
                 DiscordService.GetEmbedField('Discord Tag', formData.DiscordTag, true),
                 DiscordService.GetEmbedField('Age & (Preferred) Gender', formData.AgeAndGender, true),
-                DiscordService.GetEmbedField('Character Name & Server', formData.CharacterNameAndServer, true),
+                DiscordService.GetEmbedField('Character Name, Server, and Faction', formData.CharacterNameAndServer, true),
                 DiscordService.GetEmbedField('Main Spec', formData.MainSpec, true),
                 DiscordService.GetEmbedField('Viable Off-Spec(s) or Alts', formData.OffspecsAndAlts || '*none provided*'),
                 DiscordService.GetEmbedField('Recent Combat Logs', formData.RecentCombatLogs),

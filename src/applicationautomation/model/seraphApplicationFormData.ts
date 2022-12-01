@@ -4,7 +4,7 @@ export default class SeraphApplicationFormData {
     constructor(formData: StringKeyMap<OptionalCollection<string>>) {
         this.BattleTag = formData['Battle Tag:'] as string;
         this.DiscordTag = formData['Discord Tag:'] as string;
-        this.CharacterNameAndServer = formData['Character Name & Server:'] as string;
+        this.CharacterNameAndServer = formData['Character Name - Server - Faction:'] as string;
         this.Class = formData['Class:'] as string;
         this.MainSpec = formData['Main Spec:']  as string;
         this.OffspecsAndAlts = formData['Viable Off-Spec(s) or Alts:'] as string;
