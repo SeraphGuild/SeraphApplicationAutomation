@@ -41,7 +41,7 @@ const TeamRoleIds: StringKeyMap<string> = {
     '3. Misfits': '579784598263693313'
 };
 
-const AdminRoleId: string = '230230049507377152';
+const AdminRoleId: string = '328651719158267905';
 
 export default class DiscordService {
     private logger: Logger;
