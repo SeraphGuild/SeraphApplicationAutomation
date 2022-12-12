@@ -70,11 +70,12 @@ export default class DiscordService {
         this.logger.info('POSTing form data to discord channel');
         const embedMessage: MessageCreateOptions = DiscordService.GetEmbedMessage(formData);
         const tagMessage: string = DiscordService.GetTagMessage(formData);
+        const postTitle: string = DiscordService.GetPostTitle(formData);
 
         let result: boolean = false;
 
         try {
-            result = await this.CreateThread(formData.CharacterNameAndServer, embedMessage, tagMessage);
+            result = await this.CreateThread(postTitle, embedMessage, tagMessage);
         } catch (ex) {
             this.logger.error(`An exception occured while sending the request: ${ex}`);
         }
@@ -162,5 +163,19 @@ export default class DiscordService {
             value: value,
             inline: inline
         } as EmbedField;
+    }
+
+    private static GetPostTitle(formData: SeraphApplicationFormData): string {
+        const appTargets: string = formData.TeamsApplyingFor
+            .map(team => {
+                if (team.indexOf('General Membership') !== -1) {
+                    return "M"; 
+                }
+
+                return team.substring(0, 2);
+            })
+            .reduce((prev, currVal) => `${prev}, ${currVal}`);
+
+        return `${appTargets}: ${formData.CharacterNameAndServer}, ${formData.MainSpec} ${formData.Class}`
     }
 }
