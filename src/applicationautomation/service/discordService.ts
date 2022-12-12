@@ -172,10 +172,10 @@ export default class DiscordService {
                     return "M"; 
                 }
 
-                return team.substring(0, 2);
+                return `R${team.substring(0, 1)}`;
             })
             .reduce((prev, currVal) => `${prev}, ${currVal}`);
 
-        return `${appTargets}: ${formData.CharacterNameAndServer}, ${formData.MainSpec} ${formData.Class}`
+        return `(${appTargets}) ${formData.CharacterNameAndServer}, ${formData.MainSpec} ${formData.Class}`
     }
 }
