@@ -170,11 +170,7 @@ export default class DiscordService {
         const appTargets: string = formData.TeamsApplyingFor
             .map(team => {
                 if (team.indexOf('General Membership') !== -1) {
-                    if (team.indexOf('Horde') !== -1) {
-                        return "M[H]"
-                    }
-
-                    return "M[A]";
+                    return "M";
                 }
 
                 return `R${team.substring(0, 1)}`;
