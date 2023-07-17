@@ -18,10 +18,6 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
 
     context.log.info(`processed application. Status Code ${statusCode}`);
 
-    if (statusCode === 500) {
-        throw new Error('Failed to post application to discord');
-    }
-
     context.res = {
         status: statusCode
     }
