@@ -37,10 +37,8 @@ const ClassColorCodeMap: StringKeyMap<number> = {
 };
 
 const TeamRoleIds: StringKeyMap<string> = {
-    '1. Barely Heroic': '1065664768003805194',
-    '2. Casually Dysfunctional': '352083485420290058',
-    '3. Misfits': '438160508714221578',
-    '4. Reunion': '1094404428347474081'
+    'Barely Heroic': '1065664768003805194',
+    'Reunion': '1094404428347474081'
 };
 
 const AdminRoleId: string = '328651719158267905';
