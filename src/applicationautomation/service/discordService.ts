@@ -37,8 +37,15 @@ const ClassColorCodeMap: StringKeyMap<number> = {
 };
 
 const TeamRoleIds: StringKeyMap<string> = {
-    'Barely Heroic': '1065664768003805194',
-    'Reunion': '1094404428347474081'
+    'Barely Heroic': '1160139181457166417',
+    'Reunion': '1160139237354639370',
+    'Unsundered': '1160139349661323345'
+};
+
+const TeamAbbreviations: StringKeyMap<string> = {
+    'Barely Heroic': 'BH',
+    'Reunion': 'RU',
+    'Unsundered': 'US'
 };
 
 const AdminRoleId: string = '328651719158267905';
@@ -171,7 +178,7 @@ export default class DiscordService {
                     return "M";
                 }
 
-                return `R${team.substring(0, 1)}`;
+                return TeamAbbreviations[team];
             })
             .reduce((prev, currVal) => `${prev}, ${currVal}`);
 
