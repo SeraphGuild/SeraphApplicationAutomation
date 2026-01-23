@@ -43,9 +43,8 @@ const TeamRoleIds: StringKeyMap<string> = {
 };
 
 const TeamAbbreviations: StringKeyMap<string> = {
-    'Barely Heroic': 'BH',
-    'Reunion': 'RU',
-    'Unsundered': 'US'
+    'Reunion (Mythic)': 'RU',
+    'Unsundered (Heroic)': 'US'
 };
 
 const AdminRoleId: string = '328651719158267905';
@@ -185,3 +184,4 @@ export default class DiscordService {
         return `(${appTargets}) ${formData.CharacterNameAndServer}, ${formData.MainSpec} ${formData.Class}`
     }
 }
+
