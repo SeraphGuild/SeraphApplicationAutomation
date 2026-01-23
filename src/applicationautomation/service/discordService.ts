@@ -37,9 +37,8 @@ const ClassColorCodeMap: StringKeyMap<number> = {
 };
 
 const TeamRoleIds: StringKeyMap<string> = {
-    'Barely Heroic': '1160139181457166417',
-    'Reunion': '1160139237354639370',
-    'Unsundered': '1160139349661323345'
+    'Reunion (Mythic)': '1160139237354639370',
+    'Unsundered (Heroic)': '1160139349661323345'
 };
 
 const TeamAbbreviations: StringKeyMap<string> = {
